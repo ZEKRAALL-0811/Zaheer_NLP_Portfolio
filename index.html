@@ -1,0 +1,3697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NLP-CSI 4001 — Zaheer SK</title>
+
+  <!-- Fonts: Inter Tight, Archivo & JetBrains Mono (Google Fonts variable) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@100..900&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ----------------------------------------------------
+       SCALE & COLOR SYSTEM
+       Scale: 1440-px artboard. u = min(100vw / 1440, 1.333px)
+       Colours:
+         hero paper: #e8e8ea, ink: #111  
+         lower sections: #000
+         text: #f4f4f4
+         hairlines: white at 14–28%
+    ---------------------------------------------------- */
+    :root {
+      --u: min(calc(100vw / 1440), 1.333333px);
+      --bg-hero: #e8e8ea;
+      --ink: #111111;
+      --bg-black: #000000;
+      --text-white: #f4f4f4;
+      --hairline-14: rgba(255, 255, 255, 0.14);
+      --hairline-28: rgba(255, 255, 255, 0.28);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      overflow-x: hidden;
+      width: 100%;
+      min-height: 100vh;
+      background: var(--bg-black);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    /* ----------------------------------------------------
+       HERO SECTION (1440 × 938u)
+    ---------------------------------------------------- */
+    .hero-section {
+      position: relative;
+      width: 100%;
+      background-color: var(--bg-hero);
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero-artboard {
+      position: relative;
+      width: calc(1440 * var(--u));
+      height: calc(938 * var(--u));
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    /* Hero Photo: placed at left 338u, top -86u, 764 × 1024u */
+    .hero-photo-wrap {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: calc(1440 * var(--u));
+      height: calc(938 * var(--u));
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hero-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: none;
+      opacity: 1;
+      transform: none;
+      will-change: transform, filter, opacity;
+    }
+
+    /* Nav: at (57, 61), 48u tall segmented pill */
+    .hero-nav {
+      position: absolute;
+      left: calc(57 * var(--u));
+      top: calc(61 * var(--u));
+      height: calc(48 * var(--u));
+      background: #ffffff;
+      border-radius: 999px;
+      padding: calc(4 * var(--u));
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 calc(2 * var(--u)) calc(12 * var(--u)) rgba(0, 0, 0, 0.08);
+      z-index: 20;
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    .nav-slider {
+      position: absolute;
+      top: calc(4 * var(--u));
+      left: 0;
+      height: calc(40 * var(--u));
+      width: calc(68 * var(--u));
+      background: #111111;
+      border-radius: 999px;
+      transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), width 0.35s cubic-bezier(0.2, 0, 0, 1);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .nav-link {
+      position: relative;
+      z-index: 2;
+      padding: 0 calc(18 * var(--u));
+      height: calc(40 * var(--u));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: calc(14 * var(--u));
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: #111111;
+      transition: color 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .nav-link.is-active {
+      color: #ffffff;
+    }
+
+    /* Live Date / Time at top right */
+    .hero-date {
+      position: absolute;
+      right: calc(57 * var(--u));
+      top: calc(72 * var(--u));
+      font-size: calc(14 * var(--u));
+      font-weight: 500;
+      color: #333333;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      transform: translateY(-10px);
+      z-index: 15;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Title: "NLP-CSI 4001" on one single line */
+    .hero-title-group {
+      position: absolute;
+      left: calc(57 * var(--u));
+      top: calc(246 * var(--u));
+      z-index: 10;
+      display: flex;
+      align-items: baseline;
+      gap: calc(14 * var(--u));
+      white-space: nowrap;
+    }
+
+    .title-line-mask {
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: bottom;
+    }
+
+    .title-line {
+      display: inline-block;
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 104, 'wght' 700;
+      font-size: calc(86 * var(--u));
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      transform: none;
+      will-change: transform;
+    }
+
+    .title-year {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 100, 'wght' 500;
+      font-size: calc(22 * var(--u));
+      color: #222222;
+      opacity: 0;
+      transform: translateY(10px);
+      letter-spacing: -0.02em;
+    }
+
+    /* About: "● (ABOUT)" at y 458 */
+    .hero-about {
+      position: absolute;
+      left: calc(57 * var(--u));
+      top: calc(458 * var(--u));
+      max-width: calc(275 * var(--u));
+      z-index: 10;
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    .about-label {
+      font-size: calc(13 * var(--u));
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #111111;
+      display: flex;
+      align-items: center;
+      gap: calc(6 * var(--u));
+      margin-bottom: calc(12 * var(--u));
+    }
+
+    .about-label .dot {
+      width: calc(6 * var(--u));
+      height: calc(6 * var(--u));
+      border-radius: 50%;
+      background: #111111;
+      display: inline-block;
+    }
+
+    .about-copy {
+      font-size: calc(14 * var(--u));
+      font-weight: 500;
+      line-height: 1.45;
+      color: #222222;
+      letter-spacing: -0.01em;
+    }
+
+    /* Brand plate: (794, 382), 336 × 80u, dark #1c1c1c */
+    .brand-plate {
+      position: absolute;
+      left: calc(794 * var(--u));
+      top: calc(382 * var(--u));
+      width: calc(336 * var(--u));
+      height: calc(80 * var(--u));
+      background: #1c1c1c;
+      border-radius: calc(14 * var(--u));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 calc(24 * var(--u));
+      color: #ffffff;
+      box-shadow: 0 calc(16 * var(--u)) calc(40 * var(--u)) rgba(0, 0, 0, 0.45);
+      z-index: 15;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .brand-plate:hover {
+      transform: translateY(calc(12 * var(--u))) scale(1.02);
+      box-shadow: 0 calc(20 * var(--u)) calc(50 * var(--u)) rgba(0, 0, 0, 0.6);
+    }
+
+    .brand-triangle {
+      width: calc(18 * var(--u));
+      height: calc(18 * var(--u));
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 125, 'wght' 700;
+      font-size: calc(23 * var(--u));
+      letter-spacing: 0.16em;
+      color: #ffffff;
+    }
+
+    .brand-burger {
+      display: flex;
+      flex-direction: column;
+      gap: calc(5 * var(--u));
+      width: calc(20 * var(--u));
+      flex-shrink: 0;
+    }
+
+    .brand-burger span {
+      display: block;
+      width: 100%;
+      height: calc(2 * var(--u));
+      background: #ffffff;
+    }
+
+    /* Logos across the jacket at y 788 */
+    .jacket-logos {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      top: calc(784 * var(--u));
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 115, 'wght' 600;
+      font-size: calc(13.5 * var(--u));
+      letter-spacing: 0.22em;
+      color: rgba(255, 255, 255, 0.85);
+      text-transform: uppercase;
+      z-index: 10;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 1 !important;
+    }
+
+    .jacket-logos span {
+      margin: 0 calc(12 * var(--u));
+      opacity: 0.5;
+    }
+
+    /* ==================================================
+       3D CYLINDER CAROUSEL SECTION (#works / #sections)
+       - Pure black (#000000)
+       - Perspective: 1350px
+       - 100% Monochrome Black-and-White theme
+       - 10 Cards with 3D vertical cylinder flow
+    ================================================== */
+    .sections-carousel-section {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 720px;
+      max-height: 1100px;
+      background-color: #000000;
+      color: #ffffff;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-user-select: none;
+      scroll-margin-top: 0px;
+      cursor: grab;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .sections-carousel-section:active {
+      cursor: grabbing;
+    }
+
+    .carousel-hud-top {
+      position: absolute;
+      top: calc(28 * var(--u));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .hud-pill {
+      background: rgba(18, 18, 18, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      padding: calc(9 * var(--u)) calc(22 * var(--u));
+      display: inline-flex;
+      align-items: center;
+      gap: calc(10 * var(--u));
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(11 * var(--u));
+      color: #ffffff;
+      letter-spacing: 0.08em;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+    }
+
+    .hud-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 10px #ffffff;
+      animation: hudPulse 2.2s infinite ease-in-out;
+    }
+
+    @keyframes hudPulse {
+      0%, 100% { opacity: 0.4; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .hud-tag {
+      color: #888888;
+      font-weight: 500;
+    }
+
+    .hud-divider {
+      color: rgba(255, 255, 255, 0.25);
+    }
+
+    .hud-active-text {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .carousel-nav-controls {
+      position: absolute;
+      right: calc(36 * var(--u));
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: calc(12 * var(--u));
+    }
+
+    .carousel-nav-btn {
+      width: calc(46 * var(--u));
+      height: calc(46 * var(--u));
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .carousel-nav-btn:hover {
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .carousel-nav-btn svg {
+      width: calc(15 * var(--u));
+      height: calc(15 * var(--u));
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .carousel-nav-btn span {
+      font-size: calc(7.5 * var(--u));
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .carousel-nav-indicator {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(10.5 * var(--u));
+      font-weight: 600;
+      color: #777777;
+      padding: calc(4 * var(--u)) 0;
+      letter-spacing: 0.06em;
+    }
+
+    .carousel-hud-bottom {
+      position: absolute;
+      bottom: calc(24 * var(--u));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .hud-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(8 * var(--u));
+      font-family: 'Inter Tight', sans-serif;
+      font-size: calc(12 * var(--u));
+      color: #999999;
+      background: rgba(14, 14, 14, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: calc(7 * var(--u)) calc(18 * var(--u));
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .cylinder-carousel-scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1350px;
+      pointer-events: auto;
+    }
+
+    .cylinder-viewport {
+      position: relative;
+      transform-style: preserve-3d;
+      will-change: width, height;
+      pointer-events: auto;
+    }
+
+    .cylinder-card {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      backface-visibility: visible;
+      will-change: transform, z-index, visibility;
+      cursor: pointer;
+      pointer-events: auto;
+      border-radius: 16px;
+      transition: filter 0.22s ease;
+    }
+
+    .cylinder-card:hover {
+      filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.22));
+    }
+
+    /* Volumetric thickness slices */
+    .card-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .card-middle-layer {
+      background-color: #202020;
+      border: 1px solid #3e3e3e;
+    }
+
+    .card-face, .card-face * {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .card-face {
+      background-color: #000000;
+      transform-style: flat;
+      border: none;
+    }
+
+    .card-front {
+      transform: translateZ(3px);
+      z-index: 20;
+      isolation: isolate;
+      backface-visibility: hidden !important;
+      -webkit-backface-visibility: hidden !important;
+    }
+
+    .card-back {
+      transform: translateZ(-3px) rotateX(180deg);
+      z-index: 1;
+      isolation: isolate;
+      backface-visibility: hidden !important;
+      -webkit-backface-visibility: hidden !important;
+    }
+
+    /* Artwork Image Card Face */
+    .card-artwork-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      background: #000000;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35), 0 20px 45px rgba(0, 0, 0, 0.9);
+      z-index: 30;
+    }
+
+    .card-artwork-img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: inherit;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .card-glare-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.05) 35%, transparent 65%);
+      pointer-events: none;
+      mix-blend-mode: overlay;
+      opacity: 0.75;
+      transition: opacity 0.25s ease;
+    }
+
+    .cylinder-card:hover .card-glare-overlay {
+      opacity: 1;
+    }
+
+    .card-hover-action-pill {
+      position: absolute;
+      bottom: 12px;
+      right: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.25s ease, transform 0.25s ease, background 0.2s ease, color 0.2s ease;
+      z-index: 25;
+      pointer-events: none;
+    }
+
+    .cylinder-card:hover .card-hover-action-pill {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Back Face */
+    .card-back-blur-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 16px;
+      pointer-events: none;
+    }
+
+    .card-back-blur-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) blur(16px);
+      transform: scale(1.2);
+    }
+
+    .card-back-dimmer {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 10, 0.74);
+      border-radius: 16px;
+      pointer-events: none;
+    }
+
+    .card-magnetic-stripe {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 18px;
+      height: 38px;
+      background: #181818;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .card-details-info {
+      position: absolute;
+      inset: 0;
+      padding: 68px 18px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #ffffff;
+      z-index: 5;
+    }
+
+    .card-details-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: #e0e0e0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    }
+
+    .card-details-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.08em;
+      color: #aaaaaa;
+    }
+
+    .card-details-name {
+      text-transform: uppercase;
+    }
+
+    .card-back-title-badge {
+      font-family: 'Archivo', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-back-desc-snippet {
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 9px;
+      color: #888888;
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .card-back-action {
+      display: inline-block;
+      align-self: flex-start;
+      margin-top: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #000000;
+      background: #ffffff;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .github-repo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #000000;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
+    }
+    .github-repo-btn:hover {
+      background: #e0e0e0;
+      transform: translateY(-1px);
+    }
+    .demo-github-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #aaaaaa;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .demo-github-link:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    /* ==================================================
+       THE 10 EDITORIAL COURSE MODULE SECTIONS
+       - Strict Monochrome Editorial Styling
+       - Responsive & Scaled via var(--u)
+    ================================================== */
+    .course-module-section {
+      position: relative;
+      width: 100%;
+      background: #000000;
+      color: #f4f4f4;
+      padding: calc(110 * var(--u)) calc(57 * var(--u));
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      scroll-margin-top: 20px;
+    }
+
+    .course-module-section:nth-child(even) {
+      background: #050505;
+    }
+
+    .module-container {
+      max-width: calc(1326 * var(--u));
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .module-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: calc(44 * var(--u));
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .module-header-content {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .module-order-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(11.5 * var(--u));
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: #888888;
+      text-transform: uppercase;
+      margin-bottom: calc(10 * var(--u));
+      display: flex;
+      align-items: center;
+      gap: calc(8 * var(--u));
+    }
+
+    .module-order-badge .dot {
+      width: calc(6 * var(--u));
+      height: calc(6 * var(--u));
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    }
+
+    .module-title {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 105, 'wght' 700;
+      font-size: calc(46 * var(--u));
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      max-width: calc(840 * var(--u));
+    }
+
+    .module-sub {
+      font-size: calc(16.5 * var(--u));
+      color: #a4a4a4;
+      margin-top: calc(12 * var(--u));
+      line-height: 1.45;
+      max-width: calc(760 * var(--u));
+      font-weight: 400;
+    }
+
+    .back-to-wheel-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(8 * var(--u));
+      padding: calc(11 * var(--u)) calc(20 * var(--u));
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(11.5 * var(--u));
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.22s ease;
+      backdrop-filter: blur(8px);
+      flex-shrink: 0;
+      margin-top: calc(6 * var(--u));
+    }
+
+    .back-to-wheel-btn:hover {
+      background: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 calc(6 * var(--u)) calc(18 * var(--u)) rgba(255, 255, 255, 0.15);
+    }
+
+    .module-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: calc(24 * var(--u));
+      margin-bottom: calc(28 * var(--u));
+    }
+
+    .module-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: calc(24 * var(--u));
+      margin-bottom: calc(28 * var(--u));
+    }
+
+    .module-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: calc(20 * var(--u));
+      margin-bottom: calc(28 * var(--u));
+    }
+
+    .module-card {
+      background: #101010;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 14px;
+      padding: calc(28 * var(--u));
+      transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .module-card:hover {
+      border-color: rgba(255, 255, 255, 0.32);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+    }
+
+    .module-card-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(10 * var(--u));
+      font-weight: 600;
+      color: #777777;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: calc(10 * var(--u));
+    }
+
+    .module-card-title {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 105, 'wght' 650;
+      font-size: calc(21 * var(--u));
+      line-height: 1.2;
+      color: #ffffff;
+      margin-bottom: calc(12 * var(--u));
+      letter-spacing: -0.02em;
+    }
+
+    .module-card-text {
+      font-size: calc(14 * var(--u));
+      color: #b0b0b0;
+      line-height: 1.55;
+      margin-bottom: calc(16 * var(--u));
+    }
+
+    .module-card-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: calc(14 * var(--u));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(11 * var(--u));
+      color: #888888;
+    }
+
+    .stat-metric-box {
+      background: #0d0d0d;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: calc(22 * var(--u));
+      text-align: left;
+    }
+
+    .stat-metric-num {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 105, 'wght' 700;
+      font-size: calc(38 * var(--u));
+      line-height: 1;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+    }
+
+    .stat-metric-label {
+      font-family: 'Inter Tight', sans-serif;
+      font-size: calc(12 * var(--u));
+      color: #888888;
+      margin-top: calc(6 * var(--u));
+      font-weight: 500;
+    }
+
+    .module-code-block {
+      background: #0b0b0b;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: calc(20 * var(--u)) calc(24 * var(--u));
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(12.5 * var(--u));
+      line-height: 1.6;
+      color: #dedede;
+      overflow-x: auto;
+      margin: calc(18 * var(--u)) 0;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    .code-comment { color: #666666; font-style: italic; }
+    .code-keyword { color: #ffffff; font-weight: 600; }
+    .code-fn { color: #cccccc; }
+    .code-str { color: #aaaaaa; }
+
+    /* Interactive Demo Playground (Module 09) */
+    .demo-terminal-wrapper {
+      background: #0b0b0b;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 calc(20 * var(--u)) calc(50 * var(--u)) rgba(0, 0, 0, 0.8);
+      margin-top: calc(24 * var(--u));
+    }
+
+    .demo-terminal-header {
+      background: #141414;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: calc(14 * var(--u)) calc(20 * var(--u));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: calc(7 * var(--u));
+    }
+
+    .terminal-dot {
+      width: calc(10 * var(--u));
+      height: calc(10 * var(--u));
+      border-radius: 50%;
+      background: #333333;
+    }
+
+    .terminal-dot:nth-child(1) { background: #555555; }
+
+    .terminal-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(11 * var(--u));
+      color: #888888;
+      letter-spacing: 0.08em;
+    }
+
+    .demo-terminal-body {
+      padding: calc(28 * var(--u));
+    }
+
+    .demo-presets-row {
+      display: flex;
+      gap: calc(10 * var(--u));
+      margin-bottom: calc(16 * var(--u));
+      flex-wrap: wrap;
+    }
+
+    .demo-preset-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      padding: calc(6 * var(--u)) calc(14 * var(--u));
+      color: #bbbbbb;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: calc(12 * var(--u));
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .demo-preset-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .demo-input-box {
+      width: 100%;
+      background: #121212;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: calc(16 * var(--u));
+      color: #ffffff;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: calc(15 * var(--u));
+      resize: vertical;
+      min-height: calc(90 * var(--u));
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .demo-input-box:focus {
+      border-color: #ffffff;
+    }
+
+    .demo-action-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: calc(14 * var(--u));
+      margin-bottom: calc(24 * var(--u));
+    }
+
+    .demo-run-btn {
+      background: #ffffff;
+      color: #000000;
+      border: none;
+      border-radius: 999px;
+      padding: calc(10 * var(--u)) calc(24 * var(--u));
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(12 * var(--u));
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: calc(8 * var(--u));
+      transition: all 0.2s ease;
+    }
+
+    .demo-run-btn:hover {
+      background: #e0e0e0;
+      transform: translateY(-1px);
+      box-shadow: 0 calc(4 * var(--u)) calc(16 * var(--u)) rgba(255, 255, 255, 0.25);
+    }
+
+    .demo-results-wrap {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: calc(20 * var(--u));
+    }
+
+    .tokens-pill-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: calc(8 * var(--u));
+      margin-top: calc(10 * var(--u));
+    }
+
+    .token-chip {
+      background: #1a1a1a;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: calc(5 * var(--u)) calc(10 * var(--u));
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .token-word {
+      font-family: 'Inter Tight', sans-serif;
+      font-size: calc(13 * var(--u));
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .token-pos {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(9 * var(--u));
+      color: #888888;
+      letter-spacing: 0.05em;
+    }
+
+    /* ----------------------------------------------------
+       TRUST PANEL SECTION
+    ---------------------------------------------------- */
+    .trust-section {
+      width: 100%;
+      background-color: var(--bg-black);
+      padding-bottom: calc(150 * var(--u));
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .trust-panel {
+      width: calc(1440 * var(--u));
+      max-width: 100%;
+      background: #141414;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: calc(14 * var(--u));
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: calc(52 * var(--u)) calc(64 * var(--u));
+      box-shadow: 0 calc(20 * var(--u)) calc(60 * var(--u)) rgba(0, 0, 0, 0.6);
+    }
+
+    .trust-left {
+      width: calc(440 * var(--u));
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .glass-tile {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(calc(8 * var(--u)));
+      -webkit-backdrop-filter: blur(calc(8 * var(--u)));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: calc(10 * var(--u));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+    }
+
+    .glass-tile-asterisk {
+      top: calc(-16 * var(--u));
+      left: calc(230 * var(--u));
+      width: calc(72 * var(--u));
+      height: calc(72 * var(--u));
+    }
+
+    .glass-tile-asterisk svg {
+      width: calc(32 * var(--u));
+      height: calc(32 * var(--u));
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 1.6;
+    }
+
+    .trust-heading {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 105, 'wght' 500;
+      font-size: calc(55 * var(--u));
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text-white);
+      position: relative;
+      z-index: 2;
+    }
+
+    .glass-tile-dots {
+      bottom: calc(54 * var(--u));
+      left: calc(210 * var(--u));
+      width: calc(88 * var(--u));
+      height: calc(48 * var(--u));
+    }
+
+    .glass-tile-dots svg {
+      width: calc(48 * var(--u));
+      height: calc(24 * var(--u));
+      fill: #ffffff;
+    }
+
+    .trust-paragraph {
+      font-family: 'Inter Tight', sans-serif;
+      font-size: calc(15 * var(--u));
+      line-height: 1.5;
+      color: #888888;
+      max-width: calc(380 * var(--u));
+      margin-top: calc(28 * var(--u));
+    }
+
+    .trust-cards-row {
+      display: flex;
+      gap: calc(20 * var(--u));
+      height: calc(326 * var(--u));
+      align-items: stretch;
+      margin-right: calc(-64 * var(--u));
+      flex-shrink: 0;
+    }
+
+    .trust-card {
+      border-radius: calc(8 * var(--u));
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .card-avatars {
+      width: calc(293 * var(--u));
+      background: #d6d6d6;
+      color: #111111;
+      padding: calc(24 * var(--u));
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .avatars-grid {
+      display: grid;
+      grid-template-columns: repeat(4, calc(48 * var(--u)));
+      gap: calc(10 * var(--u)) calc(12 * var(--u));
+      justify-content: center;
+    }
+
+    .avatar-item {
+      width: calc(48 * var(--u));
+      height: calc(48 * var(--u));
+      border-radius: 50%;
+      object-fit: cover;
+      background: #c0c0c0;
+      box-shadow: 0 calc(2 * var(--u)) calc(6 * var(--u)) rgba(0, 0, 0, 0.12);
+      transform: scale(0.4);
+      opacity: 0;
+      will-change: transform, opacity;
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+    }
+
+    .avatar-item.is-visible {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .avatar-stat-num {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 105, 'wght' 650;
+      font-size: calc(43 * var(--u));
+      line-height: 1;
+      color: #111111;
+      letter-spacing: -0.03em;
+    }
+
+    .avatar-stat-label {
+      font-size: calc(14 * var(--u));
+      font-weight: 500;
+      color: #444444;
+      margin-top: calc(5 * var(--u));
+      letter-spacing: -0.01em;
+    }
+
+    .card-awards {
+      width: calc(298 * var(--u));
+      background: #262626;
+      color: var(--text-white);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: calc(24 * var(--u));
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .awards-top-num {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 105, 'wght' 650;
+      font-size: calc(43 * var(--u));
+      line-height: 1;
+      color: var(--text-white);
+      letter-spacing: -0.03em;
+    }
+
+    .awards-top-label {
+      font-size: calc(14 * var(--u));
+      font-weight: 500;
+      color: #999999;
+      margin-top: calc(4 * var(--u));
+      letter-spacing: -0.01em;
+    }
+
+    .awards-badge-wrap {
+      display: flex;
+      align-items: center;
+      gap: calc(12 * var(--u));
+      padding: calc(8 * var(--u)) 0;
+    }
+
+    .laurel-svg {
+      width: calc(52 * var(--u));
+      height: calc(52 * var(--u));
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 1.5;
+      flex-shrink: 0;
+    }
+
+    .awards-badge-text {
+      font-family: 'Archivo', sans-serif;
+      font-variation-settings: 'wdth' 115, 'wght' 650;
+      font-size: calc(11 * var(--u));
+      line-height: 1.25;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+    }
+
+    .awards-footer-note {
+      font-size: calc(13 * var(--u));
+      color: #888888;
+      line-height: 1.4;
+    }
+
+    .card-portrait {
+      width: calc(200 * var(--u));
+      position: relative;
+    }
+
+    .card-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Footer */
+    .portfolio-footer {
+      width: 100%;
+      background: #000000;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding: calc(50 * var(--u)) calc(57 * var(--u));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #777777;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(12 * var(--u));
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .portfolio-footer a {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 900px) {
+      .module-grid-3, .module-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .module-title {
+        font-size: calc(36 * var(--u));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .sections-carousel-section {
+        min-height: 580px;
+        height: 85vh;
+      }
+      .carousel-nav-controls {
+        right: calc(16 * var(--u));
+      }
+      .hud-hint {
+        font-size: 10px;
+        padding: 5px 12px;
+      }
+      .module-grid-2, .module-grid-3, .module-grid-4 {
+        grid-template-columns: 1fr;
+      }
+      .module-title {
+        font-size: 28px;
+      }
+      .course-module-section {
+        padding: 60px 20px;
+      }
+      .card-chip-svg {
+        width: 24px;
+        height: 24px;
+      }
+      .card-jwt-svg {
+        width: 76px;
+      }
+      .circle-mark {
+        width: 18px;
+        height: 18px;
+      }
+      .circle-mark-2 {
+        margin-left: -8px;
+      }
+      .card-details-number {
+        font-size: 9.5px;
+      }
+      .card-details-meta {
+        font-size: 7.5px;
+      }
+      .trust-panel {
+        flex-direction: column;
+        padding: 30px 20px;
+        gap: 24px;
+      }
+      .trust-left {
+        width: 100%;
+      }
+      .trust-cards-row {
+        flex-direction: column;
+        margin-right: 0;
+        height: auto;
+      }
+      .trust-card {
+        width: 100% !important;
+      }
+    }
+
+    /* ----------------------------------------------------
+       REDUCED MOTION
+    ---------------------------------------------------- */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001s !important;
+        transition-duration: 0.001s !important;
+      }
+      .title-line, .title-year, .hero-about, .brand-plate, .jacket-logos, .hero-date, .hero-nav {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .hero-photo {
+        opacity: 1 !important;
+        filter: none !important;
+        transform: none !important;
+      }
+      .avatar-item {
+        opacity: 1 !important;
+        transform: scale(1) !important;
+      }
+    }
+  
+    /* LIGHTBOX MODAL FOR DIAGRAMS & MEDIA */
+    .media-lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.94);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: calc(40 * var(--u));
+      backdrop-filter: blur(12px);
+      cursor: zoom-out;
+    }
+
+    .media-lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-content-wrap {
+      position: relative;
+      max-width: 95vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: default;
+    }
+
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 82vh;
+      object-fit: contain;
+      border-radius: calc(12 * var(--u));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 calc(20 * var(--u)) calc(60 * var(--u)) rgba(0, 0, 0, 0.9);
+    }
+
+    .lightbox-caption {
+      margin-top: calc(16 * var(--u));
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(13 * var(--u));
+      color: #cccccc;
+      letter-spacing: 0.08em;
+      text-align: center;
+      max-width: calc(800 * var(--u));
+    }
+
+    .lightbox-close-btn {
+      position: absolute;
+      top: calc(-36 * var(--u));
+      right: 0;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      font-size: calc(18 * var(--u));
+      width: calc(36 * var(--u));
+      height: calc(36 * var(--u));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lightbox-close-btn:hover {
+      background: #ffffff;
+      color: #000000;
+      transform: scale(1.08);
+    }
+
+    /* ACTION & PDF BUTTONS */
+    .doc-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: calc(8 * var(--u));
+      padding: calc(10 * var(--u)) calc(18 * var(--u));
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(11.5 * var(--u));
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .doc-action-btn.primary {
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid #ffffff;
+    }
+
+    .doc-action-btn.primary:hover {
+      background: #e0e0e0;
+      box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .doc-action-btn.secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .doc-action-btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .zoomable-figure-container {
+      position: relative;
+      border-radius: calc(14 * var(--u));
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: #080808;
+      cursor: zoom-in;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .zoomable-figure-container:hover {
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 calc(12 * var(--u)) calc(36 * var(--u)) rgba(0, 0, 0, 0.6);
+    }
+
+    .zoomable-figure-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .zoomable-figure-container:hover .zoomable-figure-img {
+      transform: scale(1.015);
+    }
+
+    .zoom-hint-badge {
+      position: absolute;
+      top: calc(12 * var(--u));
+      right: calc(12 * var(--u));
+      padding: calc(6 * var(--u)) calc(12 * var(--u));
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(10 * var(--u));
+      color: #ffffff;
+      letter-spacing: 0.08em;
+      pointer-events: none;
+      backdrop-filter: blur(6px);
+    }
+
+    .figure-caption-text {
+      margin-top: calc(10 * var(--u));
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(11.5 * var(--u));
+      color: #888888;
+      letter-spacing: 0.06em;
+      line-height: 1.5;
+    }
+
+    .topic-chip-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: calc(8 * var(--u));
+      margin-top: calc(16 * var(--u));
+      margin-bottom: calc(24 * var(--u));
+    }
+
+    .topic-chip {
+      padding: calc(6 * var(--u)) calc(14 * var(--u));
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: calc(11 * var(--u));
+      letter-spacing: 0.06em;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #d0d0d0;
+      transition: all 0.2s ease;
+    }
+
+    .topic-chip:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+    }
+
+    .topic-chip.highlight {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ==================================================
+       HERO SECTION (1440 × 938u)
+  ================================================== -->
+  <section class="hero-section" id="hero">
+    <div class="hero-artboard">
+
+      <!-- Header row: Nav at (57, 61), Live Date at (1038, 70) -->
+      <div class="mobile-header-row">
+        <!-- Segmented Nav Pill -->
+        <nav class="hero-nav" id="nav-pill" aria-label="Main Navigation">
+          <div class="nav-slider" id="nav-slider"></div>
+          <a href="#hero" class="nav-link is-active" data-index="0">Home</a>
+          <a href="#works" class="nav-link" data-index="1">Modules Wheel</a>
+          <a href="#section-02" class="nav-link" data-index="2">Course Pages</a>
+          <a href="#section-10" class="nav-link" data-index="3">Reflection</a>
+        </nav>
+
+        <!-- Live Date / Clock at top right -->
+        <div class="hero-date" id="hero-date">
+          Monday / 02.11.2026 – 15:30:00
+        </div>
+      </div>
+
+      <!-- Title: "NLP-CSI 4001" on one single line -->
+      <div class="hero-title-group" id="hero-title-group">
+        <div class="title-line-mask">
+          <span class="title-line" id="title-line-1">NLP-CSI 4001</span>
+        </div>
+        <span class="title-year" id="title-year">(’25)</span>
+      </div>
+
+      <!-- About: "● (PORTFOLIO)" at y 458 -->
+      <div class="hero-about" id="hero-about">
+        <div class="about-label">
+          <span class="dot"></span> (PORTFOLIO)
+        </div>
+        <p class="about-copy" style="color: #222222; font-size: calc(13 * var(--u)); line-height: 1.45; font-weight: 500;">
+          My journey through Natural Language Processing — from text processing and hands-on experiments to classroom activities and an applied legal-AI project.
+        </p>
+        <a href="#works" style="display: inline-flex; align-items: center; gap: calc(8 * var(--u)); margin-top: calc(16 * var(--u)); padding: calc(10 * var(--u)) calc(18 * var(--u)); background: #000000; color: #ffffff; border-radius: 999px; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); font-weight: 600; letter-spacing: 0.06em; transition: all 0.2s ease; box-shadow: 0 calc(4 * var(--u)) calc(12 * var(--u)) rgba(0,0,0,0.2);">
+          Explore My NLP Journey ↗
+        </a>
+      </div>
+
+      <!-- Hero Photo: placed at left 338u, top -86u, 764 × 1024u -->
+      <div class="hero-photo-wrap" id="hero-photo-wrap">
+        <img 
+          src="zaheer_hero.webp" 
+          onerror="this.src='zaheer_hero.jpg'"
+          alt="Zaheer SK - NLP CSI 4001" 
+          class="hero-photo" 
+          id="hero-photo">
+      </div>
+
+      <!-- Brand plate: at (794, 382), 336 × 80u -->
+      <div class="brand-plate" id="brand-plate">
+        <svg class="brand-triangle" viewBox="0 0 24 24">
+          <polygon points="12,3 22,21 2,21" />
+        </svg>
+        <span class="brand-title">ZAHEER SK</span>
+        <div class="brand-burger">
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+      <!-- Editorial concepts across the jacket -->
+      <div class="jacket-logos" id="jacket-logos">
+        Analytical <span>·</span> Linguistic <span>·</span> Intelligent
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================================================
+       3D VERTICAL CYLINDER CAROUSEL SECTION (#works / #sections)
+       - Pure black (#000000)
+       - 10 Cards with 3D vertical cylinder flow
+       - Mouse wheel UP / DOWN, Drag UP / DOWN, and Card Click to Section
+  ================================================== -->
+  <section class="sections-carousel-section" id="works" aria-label="Course Module Carousel">
+    
+    <!-- Top HUD indicator -->
+    <div class="carousel-hud-top">
+      <div class="hud-pill">
+        <span class="hud-dot"></span>
+        <span class="hud-tag">COURSE DIRECTORY</span>
+        <span class="hud-divider">/</span>
+        <span class="hud-active-text" id="hud-active-label">01 / 10 • HOME</span>
+      </div>
+    </div>
+
+    <!-- Vertical Side Navigation Controls -->
+    <div class="carousel-nav-controls" aria-label="Carousel Navigation">
+      <button type="button" class="carousel-nav-btn" id="btn-wheel-prev" title="Previous module (Scroll Up)">
+        <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        <span>UP</span>
+      </button>
+      <div class="carousel-nav-indicator" id="carousel-nav-indicator">1 / 10</div>
+      <button type="button" class="carousel-nav-btn" id="btn-wheel-next" title="Next module (Scroll Down)">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+        <span>DOWN</span>
+      </button>
+    </div>
+
+    <!-- 3D perspective camera space -->
+    <div class="cylinder-carousel-scene" id="cylinder-scene" style="perspective: 1350px;">
+      <!-- Dynamic 3D coordinate viewport -->
+      <div class="cylinder-viewport" id="cylinder-viewport" style="transform-style: preserve-3d;">
+        <!-- Injected and managed by 60fps vertical cylinder engine -->
+      </div>
+    </div>
+
+    <!-- Bottom interaction guidance -->
+    <div class="carousel-hud-bottom">
+      <span class="hud-hint">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7M19 12l-7 7-7-7"/></svg>
+        Scroll mouse wheel UP/DOWN or drag vertically • Click card to enter module
+      </span>
+    </div>
+
+  </section>
+
+  <!-- ==================================================
+       THE 10 DEDICATED COURSE PAGES / SECTIONS
+  ================================================== -->
+
+  <!-- SECTION 01: HOME -->
+  <!-- ==================================================
+       SECTION 01: HOME — NLP LEARNING PORTFOLIO
+  ================================================== -->
+  <section class="course-module-section" id="section-01">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 01 / 10 — PORTFOLIO PORTAL</div>
+          <h2 class="module-title">NLP Learning Portfolio</h2>
+          <p class="module-sub">My journey through Natural Language Processing — from text processing and hands-on experiments to classroom activities and an applied legal-AI project.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <!-- Welcome Overview Card -->
+      <div class="stat-metric-box" style="margin-bottom: calc(32 * var(--u)); border-color: rgba(255, 255, 255, 0.22); padding: calc(32 * var(--u));">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.16em; color: #888888; text-transform: uppercase; margin-bottom: calc(12 * var(--u));">
+          WELCOME INTRODUCTION — ZAHEER SK
+        </div>
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(18 * var(--u)); line-height: 1.65; color: #ffffff; font-weight: 400;">
+          Welcome to my Natural Language Processing portfolio. This space brings together the concepts, practical sessions, classroom activities, and project work I explored during my NLP learning journey. It highlights how I moved from understanding and processing text to applying NLP techniques in real-world problem settings, including legal document understanding and retrieval-augmented generation.
+        </p>
+        <div style="margin-top: calc(20 * var(--u)); display: flex; gap: calc(12 * var(--u)); flex-wrap: wrap;">
+          <a href="#works" class="doc-action-btn primary">Explore My NLP Journey</a>
+          <a href="#section-02" class="doc-action-btn secondary">Begin with Introduction →</a>
+        </div>
+      </div>
+
+      <!-- 3 Pillar Overview Grid -->
+      <div class="module-grid-3">
+        <div class="module-card">
+          <div class="module-card-tag">PILLAR 01 — FOUNDATIONS</div>
+          <div class="module-card-title">Laboratory & Statistical NLP</div>
+          <p class="module-card-text">Practical text analysis using NLTK on the Brown Corpus and U.S. Inaugural addresses, tokenization, frequency distributions, word clouds, binary CountVectorizer vocabulary construction, and cosine similarity geometry.</p>
+          <div class="module-card-footer">
+            <span>MODULES 02 & 03</span>
+            <a href="#section-03" style="color: #ffffff; text-decoration: none; font-weight: 600;">VIEW LABS →</a>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">PILLAR 02 — WORKSHOPS & CASE STUDY</div>
+          <div class="module-card-title">Classroom Activities & Yellow.ai</div>
+          <p class="module-card-text">Comparative translation evaluation of ancient Tamil Sangam poetry, Broadway recommendation assistant architecture, cultural state classification concepts, and an in-depth enterprise study of Yellow.ai conversational AI.</p>
+          <div class="module-card-footer">
+            <span>MODULES 04, 05 & 06</span>
+            <a href="#section-05" style="color: #ffffff; text-decoration: none; font-weight: 600;">EXPLORE →</a>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">PILLAR 03 — CAPSTONE ENGINEERING</div>
+          <div class="module-card-title">JurisGraph Legal Corrective RAG</div>
+          <p class="module-card-text">Domain-specialized legal intelligence system segmenting Indian Supreme Court & High Court judgments into 7 rhetorical roles using InLegalBERT, Viterbi HMM smoothing, and LangGraph corrective retrieval.</p>
+          <div class="module-card-footer">
+            <span>MODULES 07, 08 & 09</span>
+            <a href="#section-07" style="color: #ffffff; text-decoration: none; font-weight: 600;">VIEW PROJECT →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 02: INTRODUCTION TO NLP -->
+  <!-- ==================================================
+       SECTION 02: INTRODUCTION TO NLP
+  ================================================== -->
+  <section class="course-module-section" id="section-02">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 02 / 10 — EXPLORING NATURAL LANGUAGE PROCESSING</div>
+          <h2 class="module-title">Introduction to NLP</h2>
+          <p class="module-sub">Understanding human language, artificial intelligence, and the knowledge gained throughout the NLP course.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <!-- Core Narrative Panel -->
+      <div class="stat-metric-box" style="margin-bottom: calc(28 * var(--u)); border-color: rgba(255, 255, 255, 0.18); padding: calc(30 * var(--u));">
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(16.5 * var(--u)); line-height: 1.65; color: #f0f0f0; margin-bottom: calc(16 * var(--u));">
+          Natural Language Processing (NLP) is a field of Artificial Intelligence that enables computers to work with human language. It helps systems analyse, understand, organize, and generate text so that people can interact with technology using everyday language.
+        </p>
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(16.5 * var(--u)); line-height: 1.65; color: #a4a4a4; margin-bottom: calc(16 * var(--u));">
+          Throughout this subject, I explored how raw text can be transformed into useful information. My learning included working with text corpora, tokenization, lowercasing, stopword and punctuation removal, word-frequency analysis, word clouds, feature extraction, CountVectorizer, document representation, and cosine similarity. I also explored a basic Naive Bayes text-classification exercise and learned how semantic retrieval and Retrieval-Augmented Generation can support more informative responses.
+        </p>
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(16.5 * var(--u)); line-height: 1.65; color: #a4a4a4; margin-bottom: 0;">
+          I applied and extended several NLP ideas in my JurisGraph project, which focuses on understanding the rhetorical structure of Indian legal judgments and retrieving role-relevant evidence before generating answers. This helped me connect foundational text-processing concepts with a larger NLP application.
+        </p>
+      </div>
+
+      <!-- Topic Chips Grid (Distinguishing Classroom Foundations from JurisGraph Capstone) -->
+      <div style="margin-bottom: calc(32 * var(--u));">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.15em; color: #888888; text-transform: uppercase; margin-bottom: calc(12 * var(--u));">
+          KEY LEARNING AREAS & APPLIED DOMAINS
+        </div>
+        <div class="topic-chip-grid">
+          <span class="topic-chip">Text Preprocessing</span>
+          <span class="topic-chip">Corpus Exploration</span>
+          <span class="topic-chip">Tokenization & Segmentation</span>
+          <span class="topic-chip">Stopword & Punctuation Filtering</span>
+          <span class="topic-chip">Word-Frequency Analysis</span>
+          <span class="topic-chip">Bag-of-Words & Feature Extraction</span>
+          <span class="topic-chip highlight">Naive Bayes (Classroom Exercise)</span>
+          <span class="topic-chip">Vector Similarity & Cosine Geometry</span>
+          <span class="topic-chip highlight">Semantic Retrieval (JurisGraph)</span>
+          <span class="topic-chip highlight">Corrective RAG (JurisGraph)</span>
+          <span class="topic-chip highlight">Legal-Domain Rhetorical NLP (JurisGraph)</span>
+        </div>
+      </div>
+
+      <div class="module-grid-3">
+        <div class="module-card">
+          <div class="module-card-tag">FOUNDATIONAL NLP</div>
+          <div class="module-card-title">Text Cleaning & Tokenization</div>
+          <p class="module-card-text">Transforming raw unstructured text streams into normalized discrete tokens through sentence splitting, lowercasing, stopword removal, and vocabulary frequency distributions.</p>
+          <div class="module-card-footer">
+            <span>TOOLING: NLTK / REGEX</span>
+            <span>STATUS: MASTERED</span>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">REPRESENTATION</div>
+          <div class="module-card-title">Vector Spaces & Similarity</div>
+          <p class="module-card-text">Building bag-of-words document representations with binary CountVectorizer, mapping vocabulary indices, and computing cosine angles between high-dimensional text vectors.</p>
+          <div class="module-card-footer">
+            <span>TOOLING: SCIKIT-LEARN</span>
+            <span>STATUS: MASTERED</span>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">GENERATIVE AI</div>
+          <div class="module-card-title">Semantic Retrieval & RAG</div>
+          <p class="module-card-text">Bridging lexical search with dense vector embeddings (BGE-small), cross-encoder reranking, and self-reflective Corrective RAG loops to ground LLM generation in verifiable evidence.</p>
+          <div class="module-card-footer">
+            <span>TOOLING: LANGGRAPH / CHROMADB</span>
+            <span>STATUS: APPLIED</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 03: NLP HANDS-ON SESSIONS -->
+  <!-- ==================================================
+       SECTION 03: NLP HANDS-ON SESSIONS
+  ================================================== -->
+  <section class="course-module-section" id="section-03">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 03 / 10 — LABORATORY IMPLEMENTATIONS</div>
+          <h2 class="module-title">NLP Hands-on Sessions</h2>
+          <p class="module-sub">Practical experiments, coding exercises, NLP concepts, and technical implementations completed during classroom laboratory sessions.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <div class="module-grid-2">
+        <!-- Session 1: 30 July 2026 -->
+        <div class="module-card" style="padding: calc(32 * var(--u));">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: calc(14 * var(--u));">
+              <span class="module-card-tag" style="margin: 0;">LABORATORY SESSION 01</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">30 JULY 2026</span>
+            </div>
+            <h3 style="font-family: 'Archivo', sans-serif; font-size: calc(22 * var(--u)); font-weight: 700; color: #ffffff; line-height: 1.25; margin-bottom: calc(14 * var(--u));">
+              Exploring Text Corpora and Statistical Text Analysis with NLTK
+            </h3>
+            <p class="module-card-text" style="margin-bottom: calc(16 * var(--u));">
+              This session introduced practical text analysis using the Natural Language Toolkit (NLTK). I explored text corpora such as the Brown Corpus and the collection of U.S. presidential inaugural addresses. The exercises demonstrated how a text corpus can be loaded, inspected, and analysed programmatically.
+            </p>
+            <p class="module-card-text" style="margin-bottom: calc(20 * var(--u));">
+              I worked with text cleaning steps such as converting text to lowercase, tokenizing words, and removing English stopwords and punctuation. I used frequency-distribution tools to identify common words and displayed the results through a top-word chart. I also generated a word cloud from Barack Obama’s 2009 inaugural address and examined word-frequency patterns across multiple inaugural speeches. The later notebook pages begin work with speech tokenization and NLTK tagging resources.
+            </p>
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: calc(8 * var(--u)); padding: calc(14 * var(--u)); margin-bottom: calc(24 * var(--u));">
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888; margin-bottom: calc(6 * var(--u));">CONCEPTS & TOOLS EXPLORED:</div>
+              <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(12.5 * var(--u)); color: #cccccc; line-height: 1.5;">
+                NLTK, Brown Corpus, Inaugural Corpus, word tokenization, stopwords, punctuation filtering, <code>FreqDist</code>, <code>Counter</code>, word clouds, frequency charts, and speech-text analysis.
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: calc(12 * var(--u)); flex-wrap: wrap; margin-top: calc(12 * var(--u));">
+            <a href="assets/nlp-portfolio/hands-on-session-30-july-2026.pdf" target="_blank" class="doc-action-btn primary">📄 View Session PDF (18 MB)</a>
+            <a href="assets/nlp-portfolio/hands-on-session-30-july-2026.pdf" download class="doc-action-btn secondary">⬇ Download</a>
+          </div>
+        </div>
+
+        <!-- Session 2: 21 August 2026 -->
+        <div class="module-card" style="padding: calc(32 * var(--u));">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: calc(14 * var(--u));">
+              <span class="module-card-tag" style="margin: 0;">LABORATORY SESSION 02</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">21 AUGUST 2026</span>
+            </div>
+            <h3 style="font-family: 'Archivo', sans-serif; font-size: calc(22 * var(--u)); font-weight: 700; color: #ffffff; line-height: 1.25; margin-bottom: calc(14 * var(--u));">
+              Feature-Based Classification, Text Vectorization, Similarity, and Text Acquisition
+            </h3>
+            <p class="module-card-text" style="margin-bottom: calc(16 * var(--u));">
+              This session contained three practical tasks. First, I created a simple feature extractor using the last letter of a name and used the NLTK names corpus to prepare male/female-labelled examples for a Naive Bayes classifier, demonstrating feature extraction in classification workflows.
+            </p>
+            <p class="module-card-text" style="margin-bottom: calc(20 * var(--u));">
+              Second, I used Scikit-learn’s <code>CountVectorizer</code> with binary output to build a vocabulary from two OCR-related text examples, converted new sentences into vector form, and calculated cosine similarity between two text descriptions (yielding approximately 0.8944). Third, I used Python’s <code>urllib</code> to retrieve Project Gutenberg's <em>Crime and Punishment</em> (1,135,213 characters) decoded as UTF-8.
+            </p>
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: calc(8 * var(--u)); padding: calc(14 * var(--u)); margin-bottom: calc(24 * var(--u));">
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888; margin-bottom: calc(6 * var(--u));">CONCEPTS & TOOLS EXPLORED:</div>
+              <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(12.5 * var(--u)); color: #cccccc; line-height: 1.5;">
+                NLTK names corpus, feature extraction, Naive Bayes, Scikit-learn, binary CountVectorizer, bag-of-words vectors, cosine similarity (~0.8944), HTTP text retrieval, UTF-8 decoding, Project Gutenberg.
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; gap: calc(12 * var(--u)); flex-wrap: wrap; margin-top: calc(12 * var(--u));">
+            <a href="assets/nlp-portfolio/hands-on-session-21-august-2026.pdf" target="_blank" class="doc-action-btn primary">📄 View Session PDF (508 KB)</a>
+            <a href="assets/nlp-portfolio/hands-on-session-21-august-2026.pdf" download class="doc-action-btn secondary">⬇ Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 04: STARS OF APPRECIATION -->
+  <!-- ==================================================
+       SECTION 04: STARS OF APPRECIATION
+  ================================================== -->
+  <section class="course-module-section" id="section-04">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 04 / 10 — COMMENDATIONS & RECOGNITION</div>
+          <h2 class="module-title">Stars of Appreciation</h2>
+          <p class="module-sub">Recognition received for answering questions and actively participating in NLP class.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <!-- Narrative Statement -->
+      <div class="stat-metric-box" style="margin-bottom: calc(32 * var(--u)); border-color: rgba(255, 255, 255, 0.22); padding: calc(28 * var(--u));">
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(18 * var(--u)); line-height: 1.6; color: #ffffff; margin: 0; font-weight: 400;">
+          “I earned four stars as tokens of appreciation for answering questions and actively participating in NLP class. These stars represent my classroom involvement, willingness to share ideas, and consistent engagement with the learning activities.”
+        </p>
+      </div>
+
+      <!-- 4 Equal-Sized Star Cards (Completely Unranked, Equal Visual Importance) -->
+      <div class="module-grid-4" style="margin-bottom: calc(32 * var(--u));">
+        <div class="module-card" style="padding: calc(20 * var(--u)); text-align: center; align-items: center;">
+          <div class="zoomable-figure-container" style="width: 100%; height: calc(180 * var(--u)); display: flex; align-items: center; justify-content: center; background: #0c0c0c; margin-bottom: calc(16 * var(--u));" onclick="openLightbox('assets/nlp-portfolio/appreciation-star-a.png', 'Star of Appreciation Token — Awarded 31 July 2026 for active classroom participation.')">
+            <img src="assets/nlp-portfolio/appreciation-star-a.png" alt="Star Token A" style="max-height: 85%; max-width: 90%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 102, 255, 0.2));">
+            <span class="zoom-hint-badge">🔍 Zoom</span>
+          </div>
+          <div class="module-card-tag" style="margin-bottom: calc(6 * var(--u));">TOKEN OF APPRECIATION</div>
+          <div style="font-family: 'Archivo', sans-serif; font-size: calc(16 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(6 * var(--u));">
+            Classroom Star Token
+          </div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">
+            Awarded: 31 July 2026
+          </div>
+        </div>
+
+        <div class="module-card" style="padding: calc(20 * var(--u)); text-align: center; align-items: center;">
+          <div class="zoomable-figure-container" style="width: 100%; height: calc(180 * var(--u)); display: flex; align-items: center; justify-content: center; background: #0c0c0c; margin-bottom: calc(16 * var(--u));" onclick="openLightbox('assets/nlp-portfolio/appreciation-star-b.png', 'Star of Appreciation Token — Awarded 05 August 2026 for concept contributions.')">
+            <img src="assets/nlp-portfolio/appreciation-star-b.png" alt="Star Token B" style="max-height: 85%; max-width: 90%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 102, 255, 0.2));">
+            <span class="zoom-hint-badge">🔍 Zoom</span>
+          </div>
+          <div class="module-card-tag" style="margin-bottom: calc(6 * var(--u));">TOKEN OF APPRECIATION</div>
+          <div style="font-family: 'Archivo', sans-serif; font-size: calc(16 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(6 * var(--u));">
+            Classroom Star Token
+          </div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">
+            Awarded: 05 August 2026
+          </div>
+        </div>
+
+        <div class="module-card" style="padding: calc(20 * var(--u)); text-align: center; align-items: center;">
+          <div class="zoomable-figure-container" style="width: 100%; height: calc(180 * var(--u)); display: flex; align-items: center; justify-content: center; background: #0c0c0c; margin-bottom: calc(16 * var(--u));" onclick="openLightbox('assets/nlp-portfolio/appreciation-star-c.png', 'Star of Appreciation Token — Awarded 31 August 2026 (Double Award Component).')">
+            <img src="assets/nlp-portfolio/appreciation-star-c.png" alt="Star Token C" style="max-height: 85%; max-width: 90%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 102, 255, 0.2));">
+            <span class="zoom-hint-badge">🔍 Zoom</span>
+          </div>
+          <div class="module-card-tag" style="margin-bottom: calc(6 * var(--u));">TOKEN OF APPRECIATION</div>
+          <div style="font-family: 'Archivo', sans-serif; font-size: calc(16 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(6 * var(--u));">
+            Classroom Star Token
+          </div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">
+            Awarded: 31 August 2026
+          </div>
+        </div>
+
+        <div class="module-card" style="padding: calc(20 * var(--u)); text-align: center; align-items: center;">
+          <div class="zoomable-figure-container" style="width: 100%; height: calc(180 * var(--u)); display: flex; align-items: center; justify-content: center; background: #0c0c0c; margin-bottom: calc(16 * var(--u));" onclick="openLightbox('assets/nlp-portfolio/appreciation-star-d.png', 'Star of Appreciation Token — Awarded 31 August 2026 (Faculty Endorsement).')">
+            <img src="assets/nlp-portfolio/appreciation-star-d.png" alt="Star Token D" style="max-height: 85%; max-width: 90%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 102, 255, 0.2));">
+            <span class="zoom-hint-badge">🔍 Zoom</span>
+          </div>
+          <div class="module-card-tag" style="margin-bottom: calc(6 * var(--u));">TOKEN OF APPRECIATION</div>
+          <div style="font-family: 'Archivo', sans-serif; font-size: calc(16 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(6 * var(--u));">
+            Classroom Star Token
+          </div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">
+            Awarded: 31 August 2026
+          </div>
+        </div>
+      </div>
+
+      <!-- Verified Classroom Notebook Certification Showcase -->
+      <div class="module-card" style="padding: calc(28 * var(--u));">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: calc(24 * var(--u)); flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 280px;">
+            <div class="module-card-tag">DOCUMENTED EVIDENCE</div>
+            <h3 style="font-family: 'Archivo', sans-serif; font-size: calc(22 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(12 * var(--u));">
+              Authentic Classroom Notebook Record
+            </h3>
+            <p class="module-card-text" style="margin-bottom: calc(16 * var(--u));">
+              The certified course notebook page recording the individual star awards signed and stamped in blue ink by the course instructor across July and August 2026. The records feature the boxed <code>[NLP]</code> course identifier, faculty initials, and the session dates <strong>31/7/2026</strong>, <strong>5/8/2026</strong>, and <strong>31/8/2026</strong> (double star notation).
+            </p>
+            <div style="display: flex; gap: calc(12 * var(--u));">
+              <button class="doc-action-btn primary" onclick="openLightbox('assets/nlp-portfolio/appreciation-stars-record.jpg', 'Full authentic classroom notebook page documenting all 4 Star of Appreciation awards.')">🔍 View Full Notebook Record</button>
+            </div>
+          </div>
+          <div class="zoomable-figure-container" style="width: calc(280 * var(--u)); height: calc(200 * var(--u));" onclick="openLightbox('assets/nlp-portfolio/appreciation-stars-record.jpg', 'Full authentic classroom notebook page documenting all 4 Star of Appreciation awards.')">
+            <img src="assets/nlp-portfolio/appreciation-stars-record.jpg" alt="Authentic Notebook Record" class="zoomable-figure-img" style="height: 100%; object-fit: cover;">
+            <span class="zoom-hint-badge">🔍 Expand</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 05: CLASSROOM ACTIVITIES -->
+  <!-- ==================================================
+       SECTION 05: CLASSROOM ACTIVITIES
+  ================================================== -->
+  <section class="course-module-section" id="section-05">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 05 / 10 — COLLABORATIVE WORKSHOPS</div>
+          <h2 class="module-title">Classroom Activities</h2>
+          <p class="module-sub">Unordered collection of practical NLP explorations, translation analyses, concept designs, and classroom exercises.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <!-- Unordered Responsive Grid of Activities (No Numbers or Rankings) -->
+      <div class="module-grid-3">
+        <!-- Activity: Ancient Tamil Translation -->
+        <div class="module-card">
+          <div>
+            <div class="module-card-tag">TRANSLATION EVALUATION</div>
+            <div class="module-card-title">Ancient Tamil Translation Comparison</div>
+            <p class="module-card-text">
+              Comparative evaluation of two English translations of the Sangam poem <em>Purananuru</em>, Poem 192 (“Yaadhum Oore, Yaavarum Kelir”) by Kaniyan Pungundranar. Analyzed G. U. Pope’s traditional rendering versus A. K. Ramanujan’s direct modern translation.
+            </p>
+            <p class="module-card-text" style="font-size: calc(12.5 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">
+              Yielded an exact-word Jaccard similarity of approx <strong>0.18</strong>. Human rubric scores (fidelity, fluency, cultural context) are provisional judgments; BLEU, BERTScore, and inter-rater agreement require further computation or evaluator data.
+            </p>
+          </div>
+          <div style="margin-top: calc(16 * var(--u));">
+            <a href="assets/nlp-portfolio/ancient-tamil-translation-comparison.pdf" target="_blank" class="doc-action-btn secondary">📄 View Evaluation PDF</a>
+          </div>
+        </div>
+
+        <!-- Activity: Broadway Map Assistant -->
+        <div class="module-card">
+          <div>
+            <div class="module-card-tag">APPLICATION DESIGN</div>
+            <div class="module-card-title">Broadway Show Discovery Assistant</div>
+            <p class="module-card-text">
+              Designed a natural-language assistant concept for <em>The Broadway Map</em>. Instead of manual map browsing, users query in natural dialogue: <em>“I’m visiting New York this weekend. Recommend a musical for my family, preferably a comedy, and show me where the theatre is.”</em>
+            </p>
+            <p class="module-card-text" style="font-size: calc(12.5 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">
+              Integrates Intent Classification, Named Entity Recognition (NER), semantic search, content-based recommendation, and RAG grounded in live show data with conversational tracking.
+            </p>
+          </div>
+          <div style="margin-top: calc(16 * var(--u));">
+            <a href="https://www.thebroadwaymap.com/" target="_blank" class="doc-action-btn secondary">↗ Broadway Map Site</a>
+          </div>
+        </div>
+
+        <!-- Activity: Understanding Metaphors -->
+        <div class="module-card">
+          <div>
+            <div class="module-card-tag">SEMANTICS & FIGURATIVE NLP</div>
+            <div class="module-card-title">Recognizing Figurative Language</div>
+            <p class="module-card-text">
+              In this classroom discussion on non-literal language, I presented the idiom <em>“It’s raining cats and dogs outside”</em> to examine how figurative expressions diverge from word-for-word compositionality.
+            </p>
+            <p class="module-card-text" style="font-size: calc(12.5 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">
+              Serves as a pedagogical entry point for exploring idiomaticity, context-dependent embeddings, metaphor detection, and the failure modes of naive literal parsing in NLP.
+            </p>
+          </div>
+          <div class="module-card-footer">
+            <span>TOPIC: IDIOMATICITY</span>
+            <span>TYPE: CLASS DISCUSSION</span>
+          </div>
+        </div>
+
+        <!-- Activity: India Through NLP -->
+        <div class="module-card">
+          <div>
+            <div class="module-card-tag">EDUCATIONAL CLASSIFIER CONCEPT</div>
+            <div class="module-card-title">India Through NLP: Cultural Analysis</div>
+            <p class="module-card-text">
+              Explored a proposed machine-learning concept that analyses textual descriptions of Indian states (languages, literature, cuisine, festivals, geography) to classify them into broad North/South regional groupings. Kerala and Punjab served as illustrative examples.
+            </p>
+            <p class="module-card-text" style="font-size: calc(12.5 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">
+              <em>Note:</em> A simplified educational model. Culture is multifaceted; outputs depend on selected features and definitions, not a rigid or definitive classification of cultural identity.
+            </p>
+          </div>
+          <div class="module-card-footer">
+            <span>DOMAIN: CULTURAL NLP</span>
+            <span>STATUS: CONCEPT PROTOTYPE</span>
+          </div>
+        </div>
+
+        <!-- Activity: Chinese Biographical Database (CBDB) -->
+        <div class="module-card">
+          <div>
+            <div class="module-card-tag">DIGITAL HUMANITIES & TEXT MINING</div>
+            <div class="module-card-title">Chinese Biographical Database (CBDB)</div>
+            <p class="module-card-text">
+              Explored the Chinese Biographical Database (CBDB), a historical knowledge graph documenting ~657,909 individuals across dynastic history. Originating with Robert M. Hartwell (1982) and the Harvard-Yenching Institute.
+            </p>
+            <p class="module-card-text" style="font-size: calc(12.5 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">
+              Built through collaboration with Fairbank Center (Harvard), Academia Sinica, and Peking University. Demonstrates large-scale biographical text mining from digitized historical texts.
+            </p>
+          </div>
+          <div class="module-card-footer">
+            <span>PARTNERS: HARVARD / PEKING UNIV</span>
+            <span>RECORDS: ~658K PERSONS</span>
+          </div>
+        </div>
+
+        <!-- Activity: CountVectorizer & Cosine Similarity -->
+        <div class="module-card">
+          <div>
+            <div class="module-card-tag">VECTOR GEOMETRY</div>
+            <div class="module-card-title">CountVectorizer & Cosine Similarity</div>
+            <p class="module-card-text">
+              Programmed a text vectorization workflow using Scikit-learn’s <code>CountVectorizer(binary=True)</code> to fit a shared vocabulary from OCR-related sentences and transform text into high-dimensional binary term vectors.
+            </p>
+            <p class="module-card-text" style="font-size: calc(12.5 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">
+              Computed cosine similarity between document vectors, establishing an analytical foundation for measuring semantic proximity between unstructured text passages without deep models.
+            </p>
+          </div>
+          <div class="module-card-footer">
+            <span>SIMILARITY: 0.8944</span>
+            <span>TOOL: SCIKIT-LEARN</span>
+          </div>
+        </div>
+
+        <!-- Activity: FSA Classroom Activity Snapshot -->
+        <div class="module-card" style="grid-column: span 3;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: calc(20 * var(--u)); flex-wrap: wrap;">
+            <div>
+              <div class="module-card-tag">CLASSROOM ACTIVITY SNAPSHOT</div>
+              <div class="module-card-title">FSA Classroom Activity Snapshot</div>
+              <p class="module-card-text" style="max-width: calc(750 * var(--u));">
+                Recorded during the Finite State Automata (FSA) classroom module. A snapshot from my classroom activity notes documenting formal language state transitions, morphological parsing workflows, and automata theory.
+              </p>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">
+              SESSION: FORMAL AUTOMATA IN NLP
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 06: NLP CASE STUDY -->
+  <!-- ==================================================
+       SECTION 06: NLP CASE STUDY — YELLOW.AI
+  ================================================== -->
+  <section class="course-module-section" id="section-06">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 06 / 10 — ENTERPRISE CONVERSATIONAL-AI CASE STUDY</div>
+          <h2 class="module-title">Yellow.ai: Conversational-AI Unicorn</h2>
+          <p class="module-sub">A deep dive into an Indian conversational-AI and NLP unicorn — how Natural Language Processing, multilingual AI, and generative systems support enterprise interactions.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <!-- Action & Overview Bar -->
+      <div class="stat-metric-box" style="margin-bottom: calc(30 * var(--u)); border-color: rgba(255, 255, 255, 0.22); padding: calc(30 * var(--u));">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: calc(24 * var(--u)); flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 300px;">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: calc(10 * var(--u));">
+              DIGITAL ASSIGNMENT SUBMISSION 1 — ZAHEER SK (23MID0195)
+            </div>
+            <h3 style="font-family: 'Archivo', sans-serif; font-size: calc(24 * var(--u)); font-weight: 700; color: #ffffff; line-height: 1.25; margin-bottom: calc(14 * var(--u));">
+              From Bengaluru Startup to Global Enterprise AI Platform
+            </h3>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(16 * var(--u)); line-height: 1.6; color: #d0d0d0; margin-bottom: calc(16 * var(--u));">
+              This case study examines Yellow.ai as an Indian conversational-AI company applying NLP, machine learning, and generative AI to customer and employee interactions. Traced from its 2016 founding in Bengaluru as Yellow Messenger through its rebranding to Yellow.ai and its expansion from chatbot automation into voice bots, generative AI, and autonomous AI agents.
+            </p>
+            <div style="display: flex; gap: calc(12 * var(--u)); flex-wrap: wrap;">
+              <a href="assets/nlp-portfolio/yellow-ai-case-study.pdf" target="_blank" class="doc-action-btn primary">📄 View Full Case Study PDF (Submission 1)</a>
+              <a href="assets/nlp-portfolio/yellow-ai-case-study.pdf" download class="doc-action-btn secondary">⬇ Download PDF</a>
+            </div>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: calc(10 * var(--u)); padding: calc(20 * var(--u)); width: calc(320 * var(--u));">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888; margin-bottom: calc(8 * var(--u));">FOUNDERS & ORIGIN:</div>
+            <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(13.5 * var(--u)); color: #ffffff; line-height: 1.5; margin-bottom: calc(12 * var(--u));">
+              <strong>Raghu Ravinutala</strong> (Co-founder & CEO), <strong>Jaya Kishore Reddy Gollareddy</strong> (Technology & Engineering), and <strong>Rashid Khan</strong> (Product Direction).
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888; margin-bottom: calc(4 * var(--u));">FOUNDING YEAR & CITY:</div>
+            <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(13 * var(--u)); color: #aaaaaa;">2016 · Bengaluru, Karnataka, India</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Capabilities Grid -->
+      <div class="module-grid-3">
+        <div class="module-card">
+          <div class="module-card-tag">PROPRIETARY NLP</div>
+          <div class="module-card-title">DynamicNLP</div>
+          <p class="module-card-text">
+            Proprietary zero-shot NLP engine for intent recognition and slot tagging without weeks of manual training. Interprets contextual requests like <em>“I haven't received my refund yet”</em> directly as refund-status workflows.
+          </p>
+          <div class="module-card-footer">
+            <span>ZERO-SHOT INTENT</span>
+            <span>ENTERPRISE ACCURACY</span>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">MULTI-LLM ORCHESTRATION</div>
+          <div class="module-card-title">YellowG Architecture</div>
+          <p class="module-card-text">
+            Orchestrates requests across proprietary models and external foundation LLMs, routing dynamically based on business constraints of accuracy, latency, and operational cost.
+          </p>
+          <div class="module-card-footer">
+            <span>MODEL ROUTING</span>
+            <span>COST / SPEED OPTIMIZATION</span>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">HUMAN-IN-THE-LOOP</div>
+          <div class="module-card-title">Generative-AI Inbox</div>
+          <p class="module-card-text">
+            Agent co-pilot providing human customer-service representatives with AI-generated draft responses, real-time contextual summaries, and policy lookup to accelerate resolution times.
+          </p>
+          <div class="module-card-footer">
+            <span>AGENT CO-PILOT</span>
+            <span>REAL-TIME ASSIST</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Omnichannel & Customers Panel -->
+      <div class="module-grid-2" style="margin-top: calc(24 * var(--u));">
+        <div class="module-card">
+          <div class="module-card-tag">OMNICHANNEL & MULTILINGUAL</div>
+          <div class="module-card-title">35+ Channels & Indian Languages</div>
+          <p class="module-card-text">
+            Deploys conversational agents seamlessly across WhatsApp, Web widgets, Voice/IVR, Instagram, Facebook Messenger, Slack, and Microsoft Teams. Features robust tokenization and understanding for Indian languages including <strong>Hindi, Tamil, Telugu, Bengali, and Marathi</strong>, alongside global languages.
+          </p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">ENTERPRISE DEPLOYMENTS</div>
+          <div class="module-card-title">Real-World Enterprise Customers</div>
+          <p class="module-card-text">
+            Cited use cases include <strong>AirAsia</strong> (internal employee knowledge automation), <strong>Lulu Hypermarket</strong> (customer support automation), and <strong>Lion Parcel</strong> (shipment tracking over WhatsApp). Additional enterprise clients cited: Sony, Domino’s, Sephora, Hyundai, and Škoda.
+          </p>
+          <div style="margin-top: calc(8 * var(--u)); font-family: 'JetBrains Mono', monospace; font-size: calc(10 * var(--u)); color: #777777;">
+            * Cited from submitted assignment case study report.
+          </div>
+        </div>
+      </div>
+
+      <!-- Business Scale & Report Disclaimers -->
+      <div class="stat-metric-box" style="margin-top: calc(24 * var(--u)); border-color: rgba(255, 255, 255, 0.12); padding: calc(24 * var(--u)); background: rgba(255, 255, 255, 0.02);">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888; margin-bottom: calc(8 * var(--u));">
+          BUSINESS SCALE & ACADEMIC REPORT REFERENCES
+        </div>
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(13.5 * var(--u)); color: #aaaaaa; line-height: 1.55; margin: 0;">
+          The submitted case study reports an estimated Annual Recurring Revenue (ARR) of approximately $80 million USD and unicorn valuation metrics achieved during rapid enterprise expansion. <em>Academic note:</em> These figures are cited directly from the submitted assignment report and its bibliography, reflecting industry claims and estimates at submission time rather than independently verified real-time financial audits.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 07: MAJOR NLP PROJECT -->
+  <!-- ==================================================
+       SECTION 07: MAJOR NLP PROJECT — JURISGRAPH
+  ================================================== -->
+  <section class="course-module-section" id="section-07">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 07 / 10 — CAPSTONE PROJECT</div>
+          <h2 class="module-title">JurisGraph: Agentic Corrective RAG</h2>
+          <p class="module-sub">Agentic Corrective Retrieval-Augmented Generation for Indian Legal Documents with Rhetorical Role Segmentation.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <!-- Tagline & Academic Disclaimer -->
+      <div class="stat-metric-box" style="margin-bottom: calc(28 * var(--u)); border-color: rgba(255, 255, 255, 0.22); padding: calc(28 * var(--u));">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.16em; color: #888888; text-transform: uppercase; margin-bottom: calc(8 * var(--u));">
+          CORE MISSION & ARCHITECTURAL TAGLINE
+        </div>
+        <div style="font-family: 'Archivo', sans-serif; font-size: calc(22 * var(--u)); font-weight: 700; color: #ffffff; line-height: 1.3; margin-bottom: calc(12 * var(--u));">
+          Role-aware retrieval and corrective generation for grounded Indian legal intelligence.
+        </div>
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(14 * var(--u)); color: #aaaaaa; line-height: 1.55; margin: 0;">
+          <strong>Academic note:</strong> JurisGraph is an academic NLP project developed for educational research and is not a substitute for professional legal advice.
+        </p>
+      </div>
+
+      <!-- Problem vs Solution Breakdown -->
+      <div class="module-grid-2" style="margin-bottom: calc(28 * var(--u));">
+        <div class="module-card">
+          <div class="module-card-tag">THE PROBLEM</div>
+          <div class="module-card-title">The Legal RAG Semantic Collapse</div>
+          <p class="module-card-text">
+            Conventional RAG splits long Indian Supreme Court and High Court judgments into arbitrary fixed-size chunk windows (e.g. 500 tokens). This breaks discourse coherence and mixes opposing claims—confusing petitioner arguments with judicial reasoning or final decisions. As a result, standard LLMs hallucinate or misattribute legal arguments.
+          </p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">THE SOLUTION</div>
+          <div class="module-card-title">Rhetorical Segmentation & Corrective Loops</div>
+          <p class="module-card-text">
+            JurisGraph classifies each sentence into one of <strong>seven canonical rhetorical roles</strong> using fine-tuned InLegalBERT, applies log-space Viterbi HMM sequence smoothing to restore document-level coherence, creates role-aware chunk boundaries in ChromaDB, and uses LangGraph corrective self-reflection to verify citations before releasing answers.
+          </p>
+        </div>
+      </div>
+
+      <!-- 7 Canonical Rhetorical Roles -->
+      <div style="margin-bottom: calc(32 * var(--u)); background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); border-radius: calc(12 * var(--u)); padding: calc(24 * var(--u));">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.15em; color: #888888; text-transform: uppercase; margin-bottom: calc(14 * var(--u));">
+          THE SEVEN CANONICAL RHETORICAL ROLES (INLEGALBERT CLASSIFICATION)
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(calc(160 * var(--u)), 1fr)); gap: calc(10 * var(--u));">
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: calc(12 * var(--u));">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(4 * var(--u));">1. FACTS</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(11 * var(--u)); color: #888888; margin: 0;">Case background, timeline, events, and evidence.</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: calc(12 * var(--u));">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(4 * var(--u));">2. ISSUE</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(11 * var(--u)); color: #888888; margin: 0;">Legal questions framed for judicial determination.</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: calc(12 * var(--u));">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(4 * var(--u));">3. ARG_PETITIONER</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(11 * var(--u)); color: #888888; margin: 0;">Submissions by petitioner / appellant counsel.</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: calc(12 * var(--u));">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(4 * var(--u));">4. ARG_RESPONDENT</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(11 * var(--u)); color: #888888; margin: 0;">Submissions by respondent / defense counsel.</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: calc(12 * var(--u));">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(4 * var(--u));">5. REASONING</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(11 * var(--u)); color: #888888; margin: 0;">Judicial rationale, analysis, and precedents.</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: calc(12 * var(--u));">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(4 * var(--u));">6. DECISION</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(11 * var(--u)); color: #888888; margin: 0;">Final operative ruling, order, and relief.</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: calc(12 * var(--u));">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(4 * var(--u));">7. NONE</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(11 * var(--u)); color: #888888; margin: 0;">Metadata, header, footer, citations, boilerplate.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Evaluated Benchmark Results (Reported for Evaluated Benchmark) -->
+      <div style="margin-bottom: calc(36 * var(--u));">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.15em; color: #888888; text-transform: uppercase; margin-bottom: calc(14 * var(--u));">
+          EVALUATED BENCHMARK RESULTS (REPORTED FOR PROJECT EVALUATION SUITE)
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: calc(16 * var(--u));">
+          <div style="background: #111111; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: calc(22 * var(--u)); text-align: center;">
+            <div style="font-family: 'Archivo', sans-serif; font-size: calc(38 * var(--u)); font-weight: 800; color: #ffffff; line-height: 1;">57.52%</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">TEST MACRO F1</div>
+            <div style="font-size: calc(11 * var(--u)); color: #666666; margin-top: calc(4 * var(--u));">vs 50.16% pre-Viterbi (+7.36%)</div>
+          </div>
+          <div style="background: #111111; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: calc(22 * var(--u)); text-align: center;">
+            <div style="font-family: 'Archivo', sans-serif; font-size: calc(38 * var(--u)); font-weight: 800; color: #ffffff; line-height: 1;">-74.2%</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">CHUNK REDUCTION</div>
+            <div style="font-size: calc(11 * var(--u)); color: #666666; margin-top: calc(4 * var(--u));">105.8 down to 27.3 coherent blocks</div>
+          </div>
+          <div style="background: #111111; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: calc(22 * var(--u)); text-align: center;">
+            <div style="font-family: 'Archivo', sans-serif; font-size: calc(38 * var(--u)); font-weight: 800; color: #ffffff; line-height: 1;">100.0%</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">ABSTENTION RATE</div>
+            <div style="font-size: calc(11 * var(--u)); color: #666666; margin-top: calc(4 * var(--u));">On adversarial unanswerable tests</div>
+          </div>
+          <div style="background: #111111; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: calc(22 * var(--u)); text-align: center;">
+            <div style="font-family: 'Archivo', sans-serif; font-size: calc(38 * var(--u)); font-weight: 800; color: #ffffff; line-height: 1;">0.0%</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888; margin-top: calc(8 * var(--u));">HALLUCINATION</div>
+            <div style="font-size: calc(11 * var(--u)); color: #666666; margin-top: calc(4 * var(--u));">Strict citation grounding gate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Figures: Architecture & Pipeline -->
+      <div class="module-grid-2" style="margin-bottom: calc(32 * var(--u));">
+        <!-- Architecture Figure -->
+        <div class="module-card" style="padding: calc(20 * var(--u));">
+          <div class="zoomable-figure-container" onclick="openLightbox('assets/nlp-portfolio/jurisgraph-architecture.png', 'JurisGraph system architecture: document segmentation and indexing, agentic corrective retrieval, and generation/evaluation.')">
+            <img src="assets/nlp-portfolio/jurisgraph-architecture.png" alt="JurisGraph System Architecture" class="zoomable-figure-img">
+            <span class="zoom-hint-badge">🔍 Click to Enlarge</span>
+          </div>
+          <p class="figure-caption-text">
+            <strong>Figure 1:</strong> JurisGraph system architecture: document segmentation and indexing, agentic corrective retrieval, and generation/evaluation.
+          </p>
+        </div>
+
+        <!-- Pipeline Figure -->
+        <div class="module-card" style="padding: calc(20 * var(--u));">
+          <div class="zoomable-figure-container" onclick="openLightbox('assets/nlp-portfolio/jurisgraph-pipeline.png', 'End-to-end pipeline: ingestion and semantic segmentation, precision retrieval, corrective LangGraph workflow, and generation with automated evaluation.')">
+            <img src="assets/nlp-portfolio/jurisgraph-pipeline.png" alt="JurisGraph End-to-End Pipeline" class="zoomable-figure-img">
+            <span class="zoom-hint-badge">🔍 Click to Enlarge</span>
+          </div>
+          <p class="figure-caption-text">
+            <strong>Figure 2:</strong> End-to-end pipeline: ingestion and semantic segmentation, precision retrieval, corrective LangGraph workflow, and generation with automated evaluation.
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Presentation Photograph -->
+      <div class="module-card" style="margin-bottom: calc(32 * var(--u)); padding: calc(24 * var(--u));">
+        <div style="display: flex; gap: calc(28 * var(--u)); align-items: center; flex-wrap: wrap;">
+          <div class="zoomable-figure-container" style="flex: 1; min-width: 300px; max-height: calc(340 * var(--u));" onclick="openLightbox('assets/nlp-portfolio/live-project-presentation.jpg', 'Live project presentation and classroom demonstration by Zaheer SK.')">
+            <img src="assets/nlp-portfolio/live-project-presentation.jpg" alt="Live project presentation and demonstration" class="zoomable-figure-img" style="object-fit: cover; max-height: calc(340 * var(--u));">
+            <span class="zoom-hint-badge">🔍 Expand Photo</span>
+          </div>
+          <div style="flex: 1; min-width: 280px;">
+            <div class="module-card-tag">LIVE CLASSROOM DEFENSE</div>
+            <h3 style="font-family: 'Archivo', sans-serif; font-size: calc(22 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(12 * var(--u));">
+              Live Project Presentation and Demonstration
+            </h3>
+            <p class="module-card-text" style="margin-bottom: calc(16 * var(--u));">
+              Zaheer SK presenting the JurisGraph architecture, rhetorical role segmentation benchmark results, and live Streamlit inference execution before faculty and peers in the classroom defense.
+            </p>
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: calc(14 * var(--u));">
+              <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888; margin-bottom: calc(6 * var(--u));">PROJECT TEAM (GROUP CAPSTONE):</div>
+              <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(13 * var(--u)); color: #ffffff; line-height: 1.6;">
+                • <strong>Zaheer SK</strong> (23MID0195) — Architecture, InLegalBERT & LangGraph<br>
+                • <strong>Spurthi Katoker</strong> (23MID0302) — Evaluation & Benchmarking<br>
+                • <strong>Monica S</strong> (23MID0114) — Data Extraction & Preprocessing
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Stack Details -->
+      <div class="module-card" style="padding: calc(28 * var(--u));">
+        <div class="module-card-tag">SYSTEM IMPLEMENTATION</div>
+        <div class="module-card-title">Production Technical Stack</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(calc(220 * var(--u)), 1fr)); gap: calc(16 * var(--u)); margin-top: calc(16 * var(--u));">
+          <div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888;">RUNTIME & ML</div>
+            <div style="font-size: calc(13.5 * var(--u)); color: #ffffff; font-weight: 600;">Python 3.11 · PyTorch</div>
+          </div>
+          <div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888;">LEGAL LANGUAGE MODEL</div>
+            <div style="font-size: calc(13.5 * var(--u)); color: #ffffff; font-weight: 600;">law-ai/InLegalBERT</div>
+          </div>
+          <div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888;">VECTOR DATABASE & EMBEDDINGS</div>
+            <div style="font-size: calc(13.5 * var(--u)); color: #ffffff; font-weight: 600;">ChromaDB · BGE-small-en-v1.5</div>
+          </div>
+          <div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888;">RERANKER & SMOOTHING</div>
+            <div style="font-size: calc(13.5 * var(--u)); color: #ffffff; font-weight: 600;">ms-marco-MiniLM · Log Viterbi HMM</div>
+          </div>
+          <div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888;">AGENTIC ORCHESTRATION</div>
+            <div style="font-size: calc(13.5 * var(--u)); color: #ffffff; font-weight: 600;">LangGraph StateGraph Engine</div>
+          </div>
+          <div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(10.5 * var(--u)); color: #888888;">LOCAL GENERATOR & AUDIT</div>
+            <div style="font-size: calc(13.5 * var(--u)); color: #ffffff; font-weight: 600;">Ollama llama3.2:3b · DeepEval</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 08: PROJECT PRESENTATION -->
+  <!-- ==================================================
+       SECTION 08: PROJECT PRESENTATION
+  ================================================== -->
+  <section class="course-module-section" id="section-08">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 08 / 10 — DEFENSE & SLIDE DECK</div>
+          <h2 class="module-title">Project Presentation</h2>
+          <p class="module-sub">JurisGraph formal project defense slide deck: problem statement, dual-branch architecture, prompt discipline, pipeline execution, and benchmark evaluation.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <!-- Action Banner: Download PPTX -->
+      <div class="stat-metric-box" style="margin-bottom: calc(32 * var(--u)); border-color: rgba(255, 255, 255, 0.22); padding: calc(30 * var(--u));">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: calc(24 * var(--u)); flex-wrap: wrap;">
+          <div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.15em; color: #888888; text-transform: uppercase; margin-bottom: calc(8 * var(--u));">
+              OFFICIAL SLIDE DECK ASSET (.PPTX)
+            </div>
+            <div style="font-family: 'Archivo', sans-serif; font-size: calc(22 * var(--u)); font-weight: 700; color: #ffffff; margin-bottom: calc(8 * var(--u));">
+              JurisGraph: Agentic Corrective RAG for Indian Legal Documents
+            </div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(14 * var(--u)); color: #aaaaaa; max-width: calc(680 * var(--u)); margin: 0;">
+              Complete 10-slide master defense deck presented before the NLP evaluation panel. Contains full architectural diagrams, prompt contracts, and experimental evaluation tables.
+            </p>
+          </div>
+          <div style="display: flex; gap: calc(12 * var(--u)); flex-wrap: wrap;">
+            <a href="assets/nlp-portfolio/jurisgraph-presentation.pptx" download class="doc-action-btn primary">⬇ Download PPTX (3.7 MB)</a>
+            <a href="assets/nlp-portfolio/jurisgraph-presentation.pptx" target="_blank" class="doc-action-btn secondary">📂 Open PPTX File</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 Slide Breakdown Grid Directly from PPTX -->
+      <div style="margin-bottom: calc(16 * var(--u)); font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.15em; color: #888888; text-transform: uppercase;">
+        SLIDE DECK BREAKDOWN (10 SLIDES SUMMARY)
+      </div>
+
+      <div class="module-grid-2">
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 01 · EXECUTIVE TITLE</div>
+          <div class="module-card-title">Project Title & Overview</div>
+          <p class="module-card-text">JurisGraph: Agentic Corrective RAG for Indian Legal Documents with Rhetorical Role Segmentation. Author: Zaheer SK, Spurthi Katoker, Monica S.</p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 02 · MOTIVATION</div>
+          <div class="module-card-title">The Gap in Legal RAG</div>
+          <p class="module-card-text">Why standard chunking fails on legal discourse: fixed token windows collapse argument boundaries and mix petitioner submissions with judicial orders.</p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 03 · ARCHITECTURE</div>
+          <div class="module-card-title">Dual-Branch Design</div>
+          <p class="module-card-text">Branch A: Ingestion, InLegalBERT sentence classification, Viterbi HMM smoothing, ChromaDB storage. Branch B: Query routing, LangGraph CRAG loop.</p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 04 · SYSTEM STACK</div>
+          <div class="module-card-title">Core Technology Infrastructure</div>
+          <p class="module-card-text">Compact stack built on Python 3.11, PyTorch, InLegalBERT, BGE-small, ChromaDB, ms-marco MiniLM, LangGraph, and Ollama llama3.2:3b.</p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 05 · DATASETS</div>
+          <div class="module-card-title">Grounding Data & Pretraining</div>
+          <p class="module-card-text">LegalSeg (7,120 judgments, 1.49M sentences, 7 roles), InLegalBERT pretraining corpus (5.4M judgments 1950–2019), and curated 30-query benchmark.</p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 06 · PROMPT DISCIPLINE</div>
+          <div class="module-card-title">Four Rigid Prompt Contracts</div>
+          <p class="module-card-text">Query Router / Role Mapper, Relevance Grader, Query Rewriter, and Grounded Generator with mandatory citation brackets and strict abstention.</p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 07 · PIPELINE</div>
+          <div class="module-card-title">End-to-End Execution Flow</div>
+          <p class="module-card-text">Step-by-step trace from PDF text extraction through rhetorical classification, Viterbi smoothing, hybrid retrieval, cross-encoding, and verification.</p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 08 · EVALUATION</div>
+          <div class="module-card-title">Benchmark Empirical Results</div>
+          <p class="module-card-text">57.52% Test Macro F1 (+7.36% gain from Viterbi smoothing), 74.2% reduction in chunk fragmentation, 100% abstention on unanswerable queries.</p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 09 · TARGET AUDIENCE</div>
+          <div class="module-card-title">Intended Users & Impact</div>
+          <p class="module-card-text">Engineered for appellate advocates, judicial law clerks, legal compliance officers, law faculty, and academic NLP researchers.</p>
+        </div>
+
+        <div class="module-card">
+          <div class="module-card-tag">SLIDE 10 · SOURCES</div>
+          <div class="module-card-title">References & Precedents</div>
+          <p class="module-card-text">Indian Kanoon, Supreme Court Judgment Information System, LegalSeg benchmark references, and LangGraph multi-agent RAG foundations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 09: PROJECT DEMO -->
+  <!-- ==================================================
+       SECTION 09: PROJECT DEMO
+  ================================================== -->
+  <section class="course-module-section" id="section-09">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 09 / 10 — LIVE INFERENCE & REPOSITORY</div>
+          <h2 class="module-title">See JurisGraph in Action</h2>
+          <p class="module-sub">Interactive walkthrough of the JurisGraph Streamlit application, live execution pipeline, and official GitHub repository.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <!-- Official Demo Video Player -->
+      <div style="margin-bottom: calc(28 * var(--u)); border-radius: calc(14 * var(--u)); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.18); background: #000000; box-shadow: 0 calc(20 * var(--u)) calc(50 * var(--u)) rgba(0, 0, 0, 0.85);">
+        <video controls style="width: 100%; height: auto; max-height: calc(560 * var(--u)); display: block; background: #000000;" poster="assets/cards/card_09.jpg">
+          <source src="assets/nlp-portfolio/jurisgraph-demo.mp4" type="video/mp4">
+          Your browser does not support the video tag. You can download the demo video from <code>assets/nlp-portfolio/jurisgraph-demo.mp4</code>.
+        </video>
+      </div>
+
+      <!-- Accurate Video Description Matching the Recording -->
+      <div class="stat-metric-box" style="margin-bottom: calc(32 * var(--u)); border-color: rgba(255, 255, 255, 0.18); padding: calc(28 * var(--u));">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.15em; color: #888888; text-transform: uppercase; margin-bottom: calc(10 * var(--u));">
+          RECORDING WALKTHROUGH ANALYSIS (5.1 MINUTES DEMO)
+        </div>
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(15.5 * var(--u)); line-height: 1.65; color: #d0d0d0; margin-bottom: calc(16 * var(--u));">
+          This walkthrough video demonstrates the JurisGraph Streamlit application in operation. The recording shows document ingestion of an Indian court judgment (<code>sample3.pdf</code>), rhetorical role classification into 7 canonical roles with InLegalBERT and Viterbi sequence smoothing, ChromaDB vector indexing, and the live pipeline execution trace displaying decision nodes (<code>map_role_node</code>, <code>retrieve_node</code>, <code>grade_node</code>, <code>generate_node</code>) with precise wall-clock latencies. It illustrates role-filtered retrieval, cross-encoder reranking, and citation-grounded response generation using a local <code>llama3.2:3b</code> model with built-in abstention for unanswerable queries.
+        </p>
+        <div style="display: flex; gap: calc(12 * var(--u)); flex-wrap: wrap; align-items: center;">
+          <a href="https://github.com/ZEKRAALL-0811/NLP-Corrective-RAG-for-Indian-Judgement-Legal-Document-Segmentation.git" target="_blank" class="doc-action-btn primary">
+            ↗ View Source Code on GitHub
+          </a>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: calc(11.5 * var(--u)); color: #888888;">
+            Repository: ZEKRAALL-0811 / NLP-Corrective-RAG-for-Indian-Judgement-Legal-Document-Segmentation
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10: LEARNING REFLECTION -->
+  <!-- ==================================================
+       SECTION 10: LEARNING REFLECTION
+  ================================================== -->
+    <!-- ==================================================
+       SECTION 10: MY NLP LEARNING JOURNEY (RETROSPECTIVE)
+  ================================================== -->
+  <section class="course-module-section" id="section-10">
+    <div class="module-container">
+      <div class="module-header-row">
+        <div class="module-header-content">
+          <div class="module-order-badge"><span class="dot"></span> MODULE 10 / 10 — COURSE RETROSPECTIVE</div>
+          <h2 class="module-title">My NLP Learning Journey</h2>
+          <p class="module-sub">Key takeaways, skills gained, challenges faced, and my overall learning experience in NLP.</p>
+        </div>
+        <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
+      </div>
+
+      <!-- Hero Card Banner Showcase - 100% Edge-to-Edge with Matching Border -->
+      <div class="section-card" style="margin: calc(20 * var(--u)) 0 calc(32 * var(--u)); border-radius: calc(16 * var(--u)); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2); background: #000000; box-shadow: 0 calc(20 * var(--u)) calc(50 * var(--u)) rgba(0, 0, 0, 0.85); position: relative; width: 100%;">
+        <img src="assets/cards/card_10.jpg" alt="My NLP Learning Journey — Visual Card" style="width: 100%; height: auto; display: block; object-fit: cover; object-position: center; border-radius: inherit; filter: contrast(1.04);">
+      </div>
+
+      <!-- 5-Stage Milestone Pathway - Connected Timeline with Monochrome Icons -->
+      <div style="margin-bottom: calc(36 * var(--u));">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: calc(18 * var(--u)); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: calc(10 * var(--u));">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.15em; color: #888888; text-transform: uppercase;">
+            ILLUMINATED LEARNING PATHWAY — 5 CORE MILESTONES
+          </div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #555555;">
+            FOUNDATIONS → CAPSTONE
+          </div>
+        </div>
+
+        <div class="milestones-timeline-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: calc(14 * var(--u)); position: relative;">
+          <!-- Milestone 01 -->
+          <div class="milestone-step-card" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: calc(12 * var(--u)); padding: calc(18 * var(--u)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: border-color 0.25s, transform 0.25s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: calc(14 * var(--u));">
+              <div style="width: calc(36 * var(--u)); height: calc(36 * var(--u)); border-radius: calc(8 * var(--u)); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              </div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: calc(10 * var(--u)); color: #888888; letter-spacing: 0.12em;">STAGE 01</span>
+            </div>
+            <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(14 * var(--u)); font-weight: 600; color: #ffffff; margin-bottom: calc(8 * var(--u));">Foundations of NLP</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(12 * var(--u)); color: #aaaaaa; line-height: 1.5; margin: 0;">Deep dive into tokenization, linguistics, language models, and text processing fundamentals.</p>
+          </div>
+
+          <!-- Milestone 02 -->
+          <div class="milestone-step-card" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: calc(12 * var(--u)); padding: calc(18 * var(--u)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: border-color 0.25s, transform 0.25s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: calc(14 * var(--u));">
+              <div style="width: calc(36 * var(--u)); height: calc(36 * var(--u)); border-radius: calc(8 * var(--u)); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              </div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: calc(10 * var(--u)); color: #888888; letter-spacing: 0.12em;">STAGE 02</span>
+            </div>
+            <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(14 * var(--u)); font-weight: 600; color: #ffffff; margin-bottom: calc(8 * var(--u));">Hands-on Code</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(12 * var(--u)); color: #aaaaaa; line-height: 1.5; margin: 0;">Practical implementations from scratch: TF-IDF, N-grams, Word2Vec, Seq2Seq, and Transformer architectures.</p>
+          </div>
+
+          <!-- Milestone 03 -->
+          <div class="milestone-step-card" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: calc(12 * var(--u)); padding: calc(18 * var(--u)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: border-color 0.25s, transform 0.25s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: calc(14 * var(--u));">
+              <div style="width: calc(36 * var(--u)); height: calc(36 * var(--u)); border-radius: calc(8 * var(--u)); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+              </div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: calc(10 * var(--u)); color: #888888; letter-spacing: 0.12em;">STAGE 03</span>
+            </div>
+            <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(14 * var(--u)); font-weight: 600; color: #ffffff; margin-bottom: calc(8 * var(--u));">Empirical Analysis</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(12 * var(--u)); color: #aaaaaa; line-height: 1.5; margin: 0;">Real-world case study on Indian legal document segmentation and enterprise conversational systems.</p>
+          </div>
+
+          <!-- Milestone 04 -->
+          <div class="milestone-step-card" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: calc(12 * var(--u)); padding: calc(18 * var(--u)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: border-color 0.25s, transform 0.25s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: calc(14 * var(--u));">
+              <div style="width: calc(36 * var(--u)); height: calc(36 * var(--u)); border-radius: calc(8 * var(--u)); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              </div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: calc(10 * var(--u)); color: #888888; letter-spacing: 0.12em;">STAGE 04</span>
+            </div>
+            <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(14 * var(--u)); font-weight: 600; color: #ffffff; margin-bottom: calc(8 * var(--u));">Corrective RAG</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(12 * var(--u)); color: #aaaaaa; line-height: 1.5; margin: 0;">Building JurisGraph — Graph-based retrieval augmented generation with corrective validation for legal judgments.</p>
+          </div>
+
+          <!-- Milestone 05 -->
+          <div class="milestone-step-card" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: calc(12 * var(--u)); padding: calc(18 * var(--u)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: border-color 0.25s, transform 0.25s;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: calc(14 * var(--u));">
+              <div style="width: calc(36 * var(--u)); height: calc(36 * var(--u)); border-radius: calc(8 * var(--u)); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+              </div>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: calc(10 * var(--u)); color: #888888; letter-spacing: 0.12em;">STAGE 05</span>
+            </div>
+            <div style="font-family: 'Inter Tight', sans-serif; font-size: calc(14 * var(--u)); font-weight: 600; color: #ffffff; margin-bottom: calc(8 * var(--u));">Capstone Mastery</div>
+            <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(12 * var(--u)); color: #aaaaaa; line-height: 1.5; margin: 0;">Synthesis of theoretical linguistics and production-grade NLP engineering.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Knowledge Cards with Glassmorphism and Subtle Silver Borders -->
+      <div class="module-grid-3" style="margin-bottom: calc(32 * var(--u));">
+        <div class="module-card" style="border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border-radius: calc(14 * var(--u)); padding: calc(24 * var(--u)); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="module-card-tag" style="font-family: 'JetBrains Mono', monospace; font-size: calc(10 * var(--u)); letter-spacing: 0.14em; color: #888888; text-transform: uppercase; margin-bottom: calc(10 * var(--u));">THEORETICAL RIGOR</div>
+            <div class="module-card-title" style="font-family: 'Inter Tight', sans-serif; font-size: calc(18 * var(--u)); font-weight: 600; color: #ffffff; margin-bottom: calc(12 * var(--u));">Foundations to Transformer Models</div>
+            <p class="module-card-text" style="font-family: 'Inter Tight', sans-serif; font-size: calc(13.5 * var(--u)); line-height: 1.6; color: #b8b8b8; margin: 0;">From n-grams and classical linguistics to self-attention and modern LLMs. Deep conceptual understanding of representation learning.</p>
+          </div>
+          <div class="module-card-footer" style="margin-top: calc(20 * var(--u)); padding-top: calc(12 * var(--u)); border-top: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">
+            <span>FOCUS: THEORETICAL UNDERSTANDING</span>
+          </div>
+        </div>
+
+        <div class="module-card" style="border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border-radius: calc(14 * var(--u)); padding: calc(24 * var(--u)); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="module-card-tag" style="font-family: 'JetBrains Mono', monospace; font-size: calc(10 * var(--u)); letter-spacing: 0.14em; color: #888888; text-transform: uppercase; margin-bottom: calc(10 * var(--u));">ENGINEERING RIGOR</div>
+            <div class="module-card-title" style="font-family: 'Inter Tight', sans-serif; font-size: calc(18 * var(--u)); font-weight: 600; color: #ffffff; margin-bottom: calc(12 * var(--u));">Practical Engineering of RAG</div>
+            <p class="module-card-text" style="font-family: 'Inter Tight', sans-serif; font-size: calc(13.5 * var(--u)); line-height: 1.6; color: #b8b8b8; margin: 0;">Graph retrieval, vector embeddings, re-ranking, and hallucination reduction in production workflows.</p>
+          </div>
+          <div class="module-card-footer" style="margin-top: calc(20 * var(--u)); padding-top: calc(12 * var(--u)); border-top: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">
+            <span>TOOLING: PYTHON / NLP / RAG</span>
+          </div>
+        </div>
+
+        <div class="module-card" style="border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border-radius: calc(14 * var(--u)); padding: calc(24 * var(--u)); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div class="module-card-tag" style="font-family: 'JetBrains Mono', monospace; font-size: calc(10 * var(--u)); letter-spacing: 0.14em; color: #888888; text-transform: uppercase; margin-bottom: calc(10 * var(--u));">DOMAIN ADAPTATION</div>
+            <div class="module-card-title" style="font-family: 'Inter Tight', sans-serif; font-size: calc(18 * var(--u)); font-weight: 600; color: #ffffff; margin-bottom: calc(12 * var(--u));">Overcoming Domain Complexity</div>
+            <p class="module-card-text" style="font-family: 'Inter Tight', sans-serif; font-size: calc(13.5 * var(--u)); line-height: 1.6; color: #b8b8b8; margin: 0;">Structuring and segmenting complex Indian legal documents using corrective retrieval patterns.</p>
+          </div>
+          <div class="module-card-footer" style="margin-top: calc(20 * var(--u)); padding-top: calc(12 * var(--u)); border-top: 1px solid rgba(255, 255, 255, 0.08); font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); color: #888888;">
+            <span>TAKEAWAY: RELIABLE AI SYSTEMS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Course Reflection - Dark Glass Panel with Top Highlight -->
+      <div class="stat-metric-box" style="margin-bottom: calc(32 * var(--u)); border: 1px solid rgba(255, 255, 255, 0.16); border-top: 2px solid rgba(255, 255, 255, 0.45); background: rgba(255, 255, 255, 0.025); backdrop-filter: blur(16px); padding: calc(32 * var(--u)); border-radius: calc(16 * var(--u)); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: calc(16 * var(--u)); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: calc(12 * var(--u));">
+          <h3 style="font-family: 'Inter Tight', sans-serif; font-size: calc(20 * var(--u)); font-weight: 600; color: #ffffff; margin: 0;">Personal Reflection</h3>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: calc(11 * var(--u)); letter-spacing: 0.14em; color: #888888; text-transform: uppercase;">VERBATIM RETROSPECTIVE — ZAHEER SK</span>
+        </div>
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(16.5 * var(--u)); line-height: 1.75; color: #e6e6e6; margin-bottom: calc(18 * var(--u));">
+          My NLP learning journey helped me understand how computers can process and work with human language. I began with foundational tasks such as exploring text corpora, tokenizing text, removing stopwords, studying word frequencies, and converting text into numerical representations. The hands-on exercises helped me see how these techniques work in Python through NLTK and Scikit-learn.
+        </p>
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(16.5 * var(--u)); line-height: 1.75; color: #cccccc; margin-bottom: calc(18 * var(--u));">
+          The classroom activities expanded my understanding of how NLP can be applied to different domains, including translation comparison, recommendation systems, cultural text analysis, historical databases, and document similarity. Working on JurisGraph helped me connect these foundations to a larger application involving legal document segmentation, role-aware retrieval, corrective workflows, and grounded answer generation.
+        </p>
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(16.5 * var(--u)); line-height: 1.75; color: #cccccc; margin-bottom: 0;">
+          Overall, this subject strengthened my practical understanding of text processing, feature extraction, classification, semantic retrieval, and applied NLP system design. It also showed me the importance of evaluating outputs carefully and grounding generated responses in reliable evidence.
+        </p>
+      </div>
+
+      <!-- Final Quotation -->
+      <div style="border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border-radius: calc(16 * var(--u)); padding: calc(32 * var(--u)); margin-top: calc(24 * var(--u)); text-align: center;">
+        <p style="font-family: 'Inter Tight', sans-serif; font-size: calc(19 * var(--u)); line-height: 1.65; color: #ffffff; font-weight: 400; font-style: italic; max-width: 900px; margin: 0 auto;">
+          "Language is the ultimate mirror of human cognition. Engineering systems that comprehend it requires not just algorithms, but respect for its inherent nuance."
+        </p>
+        <div style="margin-top: calc(16 * var(--u)); font-family: 'JetBrains Mono', monospace; font-size: calc(12.5 * var(--u)); color: #888888; letter-spacing: 0.12em; font-style: italic;">
+          — Zaheer SK, NLP Portfolio 2026
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="portfolio-footer">
+    <div>
+      ZAHEER SK • NLP CSI 4001 PORTFOLIO © 2026
+    </div>
+    <div>
+      <a href="#hero">TOP ↑</a> &nbsp;•&nbsp; 
+      <a href="#works">CARDS WHEEL</a> &nbsp;•&nbsp; 
+      <a href="#section-02">MODULES (01–10)</a> &nbsp;•&nbsp; 
+      <a href="#section-10">REFLECTION</a>
+    </div>
+  </footer>
+
+  <!-- ==================================================
+       JAVASCRIPT: ENGINE & INTERACTIONS
+  ================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isRec = window.location.search.includes('rec=1');
+
+      // Elements
+      const navLinks = document.querySelectorAll('.nav-link');
+      const navSlider = document.getElementById('nav-slider');
+      const navPill = document.getElementById('nav-pill');
+      const heroPhoto = document.getElementById('hero-photo');
+      const avatarItems = document.querySelectorAll('.avatar-item');
+
+      /* --------------------------------------------------
+         0. LIVE DATE & TIME UPDATER
+      -------------------------------------------------- */
+      function updateLiveDateTime() {
+        const dateEl = document.getElementById('hero-date');
+        if (!dateEl) return;
+        const now = new Date();
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = days[now.getDay()];
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yyyy = now.getFullYear();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        dateEl.textContent = `${dayName} / ${dd}.${mm}.${yyyy} – ${hh}:${min}:${ss}`;
+      }
+      updateLiveDateTime();
+      setInterval(updateLiveDateTime, 1000);
+
+      /* --------------------------------------------------
+         1. NAV PILL SLIDING HIGHLIGHT
+      -------------------------------------------------- */
+      if (navPill && navSlider && navLinks.length) {
+        function moveSliderTo(link) {
+          const rect = link.getBoundingClientRect();
+          const pillRect = navPill.getBoundingClientRect();
+          const leftOffset = rect.left - pillRect.left;
+          navSlider.style.width = `${rect.width}px`;
+          navSlider.style.transform = `translateX(${leftOffset}px)`;
+        }
+
+        const activeLink = document.querySelector('.nav-link.is-active') || navLinks[0];
+        if (activeLink) {
+          moveSliderTo(activeLink);
+        }
+
+        navLinks.forEach(link => {
+          link.addEventListener('mouseenter', function () {
+            moveSliderTo(this);
+          });
+          link.addEventListener('focus', function () {
+            moveSliderTo(this);
+          });
+        });
+
+        navPill.addEventListener('mouseleave', function () {
+          const curr = document.querySelector('.nav-link.is-active') || navLinks[0];
+          if (curr) moveSliderTo(curr);
+        });
+      }
+
+      /* --------------------------------------------------
+         2. TRUST NUMBER COUNTER ANIMATION
+      -------------------------------------------------- */
+      function animateCounter(el, target, duration, suffix) {
+        if (!el) return;
+        const start = performance.now();
+        function update(now) {
+          const elapsed = now - start;
+          const p = Math.min(elapsed / duration, 1);
+          const ease = 1 - Math.pow(1 - p, 3);
+          const val = Math.floor(ease * target);
+          el.textContent = `${val}${suffix}`;
+          if (p < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      }
+
+      function triggerAvatarsPop(delayStep) {
+        avatarItems.forEach((avatar, index) => {
+          setTimeout(() => {
+            avatar.classList.add('is-visible');
+          }, index * (delayStep || 40));
+        });
+      }
+
+      /* --------------------------------------------------
+         3. HERO ENTRY ANIMATION SEQUENCE
+      -------------------------------------------------- */
+      function runHeroLoadSequence() {
+        const titleLine1 = document.getElementById('title-line-1');
+        const yearEl = document.getElementById('title-year');
+        const dateEl = document.getElementById('hero-date');
+        const aboutEl = document.getElementById('hero-about');
+        const brandEl = document.getElementById('brand-plate');
+        const logosEl = document.getElementById('jacket-logos');
+
+        // Immediately ensure full visibility
+        [navPill, titleLine1, yearEl, dateEl, aboutEl, brandEl, logosEl, heroPhoto].forEach(el => {
+          if (el) {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+          }
+        });
+
+        if (titleLine1) {
+          titleLine1.animate([
+            { transform: 'translateY(40%)', opacity: 0.5 },
+            { transform: 'translateY(0%)', opacity: 1 }
+          ], {
+            duration: 600,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            fill: 'forwards'
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', runHeroLoadSequence);
+      } else {
+        runHeroLoadSequence();
+      }
+
+      // Scroll-driven Interactions
+      let trustAnimated = false;
+      function onScroll() {
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (heroPhoto && scrollY < 1200) {
+          heroPhoto.style.transform = `translateY(${scrollY * 0.12}px)`;
+        }
+
+
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      /* ==================================================
+         HIGH-PERFORMANCE 3D VERTICAL CYLINDER ENGINE (60FPS)
+         - 10 Cards strictly mapped to User's 10 Modules
+         - Mouse Wheel scrolling UP & DOWN
+         - Mouse Drag / Touch Swipe UP & DOWN
+         - Card Click navigation straight to section
+         - Volumetric 3D thickness (5 layers)
+         - Interactive Parallax Tilt with inertia damping
+      ================================================== */
+      (function init10CardsVerticalCylinder() {
+                const SECTIONS_DATA = [
+          {
+            order: '01',
+            title: 'Home',
+            subtitle: 'Welcome to my Natural Language Processing learning portfolio.',
+            targetId: 'section-01',
+            image: 'assets/cards/card_01.jpg',
+            aspect: 1.873,
+            code: 'NLP-CSI 4001',
+            number: '4001 0100 2026 0001',
+            cvv: '401'
+          },
+          {
+            order: '02',
+            title: 'Introduction to NLP',
+            subtitle: 'Understanding human language, artificial intelligence, and the knowledge gained throughout the NLP course.',
+            targetId: 'section-02',
+            image: 'assets/cards/card_02.jpg',
+            aspect: 1.778,
+            code: 'NLP-CSI 4001',
+            number: '4001 0200 2026 0002',
+            cvv: '402'
+          },
+          {
+            order: '03',
+            title: 'NLP Hands-on Sessions',
+            subtitle: 'Practical experiments, coding exercises, NLP concepts, and technical implementations completed during classroom sessions.',
+            targetId: 'section-03',
+            image: 'assets/cards/card_03.jpg',
+            aspect: 1.834,
+            code: 'NLP-CSI 4001',
+            number: '4001 0300 2026 0003',
+            cvv: '403'
+          },
+          {
+            order: '04',
+            title: 'Stars of Appreciation',
+            subtitle: 'Recognition received for actively participating in class and answering questions.',
+            targetId: 'section-04',
+            image: 'assets/cards/card_04.jpg',
+            aspect: 4.039,
+            code: 'NLP-CSI 4001',
+            number: '4001 0400 2026 0004',
+            cvv: '404'
+          },
+          {
+            order: '05',
+            title: 'Classroom Activities',
+            subtitle: 'Explore the different NLP activities, classroom exercises, discussions, and practical applications.',
+            targetId: 'section-05',
+            image: 'assets/cards/card_05.jpg',
+            aspect: 4.039,
+            code: 'NLP-CSI 4001',
+            number: '4001 0500 2026 0005',
+            cvv: '405'
+          },
+          {
+            order: '06',
+            title: 'NLP Case Study',
+            subtitle: 'Explore the application of NLP techniques to real-world problems through case studies and analysis.',
+            targetId: 'section-06',
+            image: 'assets/cards/card_06.jpg',
+            aspect: 3.972,
+            code: 'NLP-CSI 4001',
+            number: '4001 0600 2026 0006',
+            cvv: '406'
+          },
+          {
+            order: '07',
+            title: 'Major NLP Project — JurisGraph',
+            subtitle: 'NLP Corrective RAG for Indian Judgment Legal Document Segmentation.',
+            targetId: 'section-07',
+            image: 'assets/cards/card_07.jpg',
+            aspect: 4.564,
+            code: 'NLP-CSI 4001',
+            number: '4001 0700 2026 0007',
+            cvv: '407'
+          },
+          {
+            order: '08',
+            title: 'Project Presentation',
+            subtitle: 'An overview of the project\'s problem statement, methodology, architecture, implementation, and results.',
+            targetId: 'section-08',
+            image: 'assets/cards/card_08.jpg',
+            aspect: 4.616,
+            code: 'NLP-CSI 4001',
+            number: '4001 0800 2026 0008',
+            cvv: '408'
+          },
+          {
+            order: '09',
+            title: 'Project Demo',
+            subtitle: 'Explore the working demonstration of my NLP project, including its functionality and GitHub repository.',
+            targetId: 'section-09',
+            image: 'assets/cards/card_09.jpg',
+            aspect: 4.464,
+            code: 'NLP-CSI 4001',
+            number: '4001 0900 2026 0009',
+            cvv: '409'
+          },
+          {
+            order: '10',
+            title: 'Learning Reflection',
+            subtitle: 'Key takeaways, skills gained, challenges faced, and my overall learning experience in NLP.',
+            targetId: 'section-10',
+            image: 'assets/cards/card_10.jpg',
+            aspect: 2.156,
+            code: 'NLP-CSI 4001',
+            number: '4001 1000 2026 0010',
+            cvv: '410'
+          }
+        ];
+
+        const cardCount = SECTIONS_DATA.length;
+        const thicknessLayers = [-2.5, -1.25, 0, 1.25, 2.5];
+        const viewportEl = document.getElementById('cylinder-viewport');
+        const carouselSection = document.getElementById('works');
+        if (!viewportEl || !carouselSection) return;
+
+        let targetProgress = 0;
+        let currentProgress = 0;
+        let isUserInteracting = false;
+        let idleTimer = null;
+        let totalDragDistance = 0;
+
+        const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+        let metrics = { cardW: 380, cardH: 214 };
+
+        function updateMetrics() {
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          let cardW = Math.round(w * 0.22 + 160);
+          const heightFactor = Math.min(1.0, Math.max(0.72, h / 860));
+          cardW = Math.round(cardW * heightFactor);
+          cardW = Math.min(440, Math.max(260, cardW));
+          const cardH = Math.round(cardW / 2.0);
+          metrics = { cardW, cardH };
+
+          viewportEl.style.width = cardW + 'px';
+          viewportEl.style.height = cardH + 'px';
+
+          document.querySelectorAll('.cylinder-card').forEach((card, idx) => {
+            card.style.width = cardW + 'px';
+            const asp = SECTIONS_DATA[idx]?.aspect || 2.0;
+            const thisH = Math.round(cardW / asp);
+            card.style.height = thisH + 'px';
+          });
+        }
+
+        window.addEventListener('mousemove', (e) => {
+          const rx = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+          const ry = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
+          mouse.targetX = Math.max(-1, Math.min(1, rx));
+          mouse.targetY = Math.max(-1, Math.min(1, ry));
+        });
+
+        document.addEventListener('mouseleave', () => {
+          mouse.targetX = 0;
+          mouse.targetY = 0;
+        });
+
+        window.addEventListener('resize', updateMetrics);
+
+        // Build 10 Cards with 5 Thickness Layers each
+        const cardEls = [];
+        for (let i = 0; i < cardCount; i++) {
+          const cardWrap = document.createElement('div');
+          cardWrap.className = 'cylinder-card';
+          cardWrap.style.transformStyle = 'preserve-3d';
+          cardWrap.dataset.index = i;
+          cardWrap.dataset.targetId = SECTIONS_DATA[i].targetId;
+          cardWrap.title = `Module ${SECTIONS_DATA[i].order}: ${SECTIONS_DATA[i].title} (Click to open)`;
+
+          const details = SECTIONS_DATA[i];
+
+          thicknessLayers.forEach((zOffset, layerIdx) => {
+            const isFrontFace = layerIdx === thicknessLayers.length - 1;
+            const isBackFace = layerIdx === 0;
+
+            if (!isFrontFace && !isBackFace) {
+              const mid = document.createElement('div');
+              mid.className = 'card-layer card-middle-layer'; mid.style.display = 'none';
+              mid.style.transform = `translateZ(${zOffset}px)`;
+              cardWrap.appendChild(mid);
+            } else if (isFrontFace) {
+              const front = document.createElement('div');
+              front.className = 'card-layer card-face card-front';
+              front.style.transform = `translateZ(${zOffset}px)`;
+
+              front.innerHTML = `
+                <div class="card-artwork-frame">
+                  <img src="${details.image}" alt="${details.title}" class="card-artwork-img" loading="eager" />
+                  <div class="card-glare-overlay"></div>
+                  <div class="card-hover-action-pill">
+                    <span>EXPLORE ${details.order}</span>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M7 7h10v10"/></svg>
+                  </div>
+                </div>
+              `;
+              cardWrap.appendChild(front);
+            } else if (isBackFace) {
+              const back = document.createElement('div');
+              back.className = 'card-layer card-face card-back';
+              back.style.transform = `translateZ(${zOffset}px) rotateX(180deg)`;
+
+              back.innerHTML = `
+                <div class="card-back-blur-wrap">
+                  <img src="${details.image}" alt="" class="card-back-blur-img" />
+                </div>
+                <div class="card-back-dimmer"></div>
+                <!-- stripe removed -->
+                <div class="card-details-info">
+                  <div class="card-details-number">${details.number}</div>
+                  <div class="card-details-meta">
+                    <span class="card-details-name">ZAHEER SK</span>
+                    <span style="opacity: 0.4">•</span>
+                    <span>${details.code}</span>
+                    <span style="opacity: 0.4">•</span>
+                    <span>CVV: ${details.cvv}</span>
+                  </div>
+                  <div class="card-back-title-badge">MODULE ${details.order} • ${details.title.toUpperCase()}</div>
+                  <div class="card-back-desc-snippet">${details.subtitle}</div>
+                  <div class="card-back-action">CLICK TO ENTER SECTION ↗</div>
+                </div>
+              `;
+              cardWrap.appendChild(back);
+            }
+          });
+
+          // Click card to scroll directly to its section
+          cardWrap.addEventListener('click', (e) => {
+            if (totalDragDistance > 8) return;
+            const targetId = cardWrap.dataset.targetId;
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+
+          viewportEl.appendChild(cardWrap);
+          cardEls.push(cardWrap);
+        }
+
+        updateMetrics();
+
+        /* --------------------------------------------------
+           MOUSE WHEEL & DRAG SCROLL HANDLERS (UP & DOWN)
+        -------------------------------------------------- */
+        carouselSection.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          isUserInteracting = true;
+          clearTimeout(idleTimer);
+          targetProgress += e.deltaY * 0.0024;
+          idleTimer = setTimeout(() => {
+            isUserInteracting = false;
+          }, 2400);
+        }, { passive: false });
+
+        let isDragging = false;
+        let dragStartY = 0;
+        let dragStartProgress = 0;
+
+        carouselSection.addEventListener('mousedown', (e) => {
+          if (e.button !== 0) return;
+          isDragging = true;
+          dragStartY = e.clientY;
+          dragStartProgress = targetProgress;
+          totalDragDistance = 0;
+          isUserInteracting = true;
+          clearTimeout(idleTimer);
+          carouselSection.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          const deltaY = e.clientY - dragStartY;
+          totalDragDistance += Math.abs(e.movementY || 0);
+          targetProgress = dragStartProgress - deltaY * 0.0042;
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (!isDragging) return;
+          isDragging = false;
+          carouselSection.style.cursor = 'grab';
+          idleTimer = setTimeout(() => {
+            isUserInteracting = false;
+          }, 2400);
+        });
+
+        // Touch support
+        carouselSection.addEventListener('touchstart', (e) => {
+          if (e.touches.length !== 1) return;
+          isDragging = true;
+          dragStartY = e.touches[0].clientY;
+          dragStartProgress = targetProgress;
+          totalDragDistance = 0;
+          isUserInteracting = true;
+          clearTimeout(idleTimer);
+        }, { passive: true });
+
+        window.addEventListener('touchmove', (e) => {
+          if (!isDragging || e.touches.length !== 1) return;
+          const deltaY = e.touches[0].clientY - dragStartY;
+          targetProgress = dragStartProgress - deltaY * 0.0045;
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+          isDragging = false;
+          idleTimer = setTimeout(() => {
+            isUserInteracting = false;
+          }, 2400);
+        });
+
+        /* --------------------------------------------------
+           60FPS VERTICAL CYLINDER RENDER LOOP
+        -------------------------------------------------- */
+        const hudActiveLabel = document.getElementById('hud-active-label');
+        const hudIndicator = document.getElementById('carousel-nav-indicator');
+
+        function renderLoop() {
+          if (!isUserInteracting && !isDragging) {
+            targetProgress += 0.0009; // Gentle continuous float
+          }
+
+          currentProgress += (targetProgress - currentProgress) * 0.095;
+          mouse.x += (mouse.targetX - mouse.x) * 0.08;
+          mouse.y += (mouse.targetY - mouse.y) * 0.08;
+
+          const h = window.innerHeight;
+          const { cardH } = metrics;
+
+          // Magnetic dwell curve
+          const roundedIndex = Math.round(currentProgress);
+          const diffFromRound = currentProgress - roundedIndex;
+          const easedDiff = Math.sign(diffFromRound) * Math.pow(Math.abs(diffFromRound) * 2, 4.2) / 2;
+          const virtualActiveIndex = roundedIndex + easedDiff;
+
+          // Update active module HUD
+          const activeIndex = ((roundedIndex % cardCount) + cardCount) % cardCount;
+          const activeModule = SECTIONS_DATA[activeIndex];
+          if (hudActiveLabel && activeModule) {
+            hudActiveLabel.textContent = `${activeModule.order} / 10 • ${activeModule.title.toUpperCase()}`;
+          }
+          if (hudIndicator && activeModule) {
+            hudIndicator.textContent = `${activeModule.order} / 10`;
+          }
+
+          for (let i = 0; i < cardCount; i++) {
+            const card = cardEls[i];
+            if (!card) continue;
+
+            let offset = i - virtualActiveIndex;
+            const halfCount = cardCount / 2;
+            while (offset > halfCount) offset -= cardCount;
+            while (offset < -halfCount) offset += cardCount;
+
+            const absOffset = Math.abs(offset);
+            const sign = Math.sign(offset);
+
+            // Hide cards when far off-screen
+            if (absOffset > 2.8) {
+              card.style.visibility = 'hidden';
+              continue;
+            } else {
+              card.style.visibility = 'visible';
+            }
+
+            const gap = 32;
+            let y = 0;
+            let z = 0;
+            let rot = 0;
+
+            if (absOffset <= 1) {
+              const t = absOffset;
+              const easedT = t * t * (3 - 2 * t);
+              const targetY = cardH * 0.95 + gap;
+              y = -sign * (easedT * targetY);
+              z = 260 + easedT * (80 - 260);
+              rot = easedT * 142;
+            } else if (absOffset <= 2) {
+              const t = absOffset - 1;
+              const easedT = t * t * (3 - 2 * t);
+              const yStart = cardH * 0.95 + gap;
+              const zStart = 80;
+              const rotStart = 142;
+              const zEnd = -160;
+              const rotEnd = 178;
+              const yEnd = yStart + cardH * 1.05 + gap;
+              y = -sign * (yStart + easedT * (yEnd - yStart));
+              z = zStart + easedT * (zEnd - zStart);
+              rot = rotStart + easedT * (rotEnd - rotStart);
+            } else {
+              const t = Math.min(absOffset - 2, 1);
+              const easedT = t * t * (3 - 2 * t);
+              const yStart = (cardH * 0.95 + gap) + (cardH * 1.05 + gap);
+              const yEnd = yStart + cardH * 1.1 + gap;
+              y = -sign * (yStart + easedT * (yEnd - yStart));
+              z = -160 + easedT * (-320 - (-160));
+              rot = 178 + easedT * (195 - 178);
+            }
+
+            // Tilt math & local rotation around X axis
+            const localCardRotation = -sign * rot;
+            const centerFactor = Math.max(0, 1 - absOffset);
+            const maxTiltY = 14;
+            const maxTiltX = 12;
+
+            const activeTiltX = -mouse.y * maxTiltX * centerFactor;
+            const activeTiltY = mouse.x * maxTiltY * centerFactor;
+
+            const totalRotX = localCardRotation + activeTiltX;
+            const totalRotY = activeTiltY;
+
+            card.style.zIndex = Math.round(z + 500).toString();
+            card.style.opacity = '1';
+            card.style.transform = `translateY(${y.toFixed(2)}px) translateZ(${z.toFixed(2)}px) rotateX(${totalRotX.toFixed(2)}deg) rotateY(${totalRotY.toFixed(2)}deg)`;
+          }
+
+          requestAnimationFrame(renderLoop);
+        }
+
+        requestAnimationFrame(renderLoop);
+      })();
+
+      /* ==================================================
+         SECTION 09 INTERACTIVE TERMINAL PLAYGROUND
+      ================================================== */
+      (function initInteractiveDemo() {
+        const inputEl = document.getElementById('demo-input');
+        const runBtn = document.getElementById('demo-run-btn');
+        const tokensCloud = document.getElementById('tokens-cloud');
+        const sentimentBadge = document.getElementById('demo-sentiment-badge');
+        const presetBtns = document.querySelectorAll('.demo-preset-btn');
+        if (!inputEl || !runBtn || !tokensCloud || !sentimentBadge) return;
+
+        function analyzeText(text) {
+          if (!text) return;
+          tokensCloud.innerHTML = '';
+
+          // Tokenize
+          const words = text.match(/\b[\w'-]+\b|[.,!?;]/g) || text.split(/\s+/);
+
+          words.forEach((word) => {
+            const lower = word.toLowerCase();
+            let pos = 'NOUN';
+
+            if (/^(the|a|an|this|that|these|those)$/i.test(word)) {
+              pos = 'DET';
+            } else if (/^(in|on|at|by|with|from|to|for|of|under)$/i.test(word)) {
+              pos = 'ADP';
+            } else if (/^(and|but|or|so|yet)$/i.test(word)) {
+              pos = 'CCONJ';
+            } else if (/^(is|are|was|were|revolutionize|arguing|challenged|filed|tested|learn)$/i.test(word)) {
+              pos = 'VERB';
+            } else if (/^(appellant|respondent|conviction|judgment|penal|code|section|testimony)$/i.test(word)) {
+              pos = 'LEGAL';
+            } else if (/^(breathtaking|disappointing|deep|accurate|neural|direct)$/i.test(word)) {
+              pos = 'ADJ';
+            } else if (/^\d+$/.test(word)) {
+              pos = 'NUM';
+            } else if (/^[.,!?;:'"]$/.test(word)) {
+              pos = 'PUNCT';
+            }
+
+            const chip = document.createElement('div');
+            chip.className = 'token-chip';
+            chip.innerHTML = `
+              <span class="token-word">${word}</span>
+              <span class="token-pos">${pos}</span>
+            `;
+            tokensCloud.appendChild(chip);
+          });
+
+          // Rhetorical & sentiment evaluation
+          const lowerText = text.toLowerCase();
+          if (lowerText.includes('appellant') || lowerText.includes('penal code') || lowerText.includes('section 302') || lowerText.includes('judgment')) {
+            sentimentBadge.textContent = 'RHETORICAL ROLE: LEGAL ARGUMENT (APPELLANT) — 97.4%';
+            sentimentBadge.style.color = '#ffffff';
+          } else if (lowerText.includes('breathtaking') || lowerText.includes('revolutionize') || lowerText.includes('outstanding') || lowerText.includes('great')) {
+            if (lowerText.includes('disappointing') || lowerText.includes('abysmal') || lowerText.includes('poor')) {
+              sentimentBadge.textContent = 'POLARITY: MIXED / ASPECT-SPLIT (88.9%)';
+              sentimentBadge.style.color = '#ffffff';
+            } else {
+              sentimentBadge.textContent = 'POLARITY: POSITIVE (96.4%)';
+              sentimentBadge.style.color = '#ffffff';
+            }
+          } else if (lowerText.includes('disappointing') || lowerText.includes('abysmal') || lowerText.includes('poor')) {
+            sentimentBadge.textContent = 'POLARITY: NEGATIVE (91.2%)';
+            sentimentBadge.style.color = '#cccccc';
+          } else {
+            sentimentBadge.textContent = 'PREDICTION: INFORMATIVE ARCHITECTURE (94.8%)';
+            sentimentBadge.style.color = '#aaaaaa';
+          }
+        }
+
+        runBtn.addEventListener('click', () => {
+          analyzeText(inputEl.value.trim());
+        });
+
+        presetBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            inputEl.value = btn.dataset.text;
+            analyzeText(btn.dataset.text);
+          });
+        });
+
+        // Initialize with default text
+        analyzeText(inputEl.value.trim());
+      })();
+
+      /* ==================================================
+         SMOOTH NAVIGATION TRACKING
+      ================================================== */
+      (function initNavTracking() {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const navSlider = document.getElementById('nav-slider');
+        if (!navLinks.length || !navSlider) return;
+
+        const sectionMap = [
+          { id: 'hero', index: 0 },
+          { id: 'works', index: 1 },
+          { id: 'section-02', index: 2 },
+          { id: 'section-10', index: 3 }
+        ];
+
+        function setActive(index) {
+          navLinks.forEach((link, idx) => {
+            if (idx === index) {
+              link.classList.add('is-active');
+              link.style.color = '#ffffff';
+              const rect = link.getBoundingClientRect();
+              const pillRect = link.parentElement.getBoundingClientRect();
+              navSlider.style.width = `${rect.width}px`;
+              navSlider.style.transform = `translateX(${rect.left - pillRect.left}px)`;
+            } else {
+              link.classList.remove('is-active');
+              link.style.color = '#111111';
+            }
+          });
+        }
+
+        navLinks.forEach((link, idx) => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth' });
+              setActive(idx);
+            }
+          });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const found = sectionMap.find(s => s.id === entry.target.id);
+              if (found !== undefined) setActive(found.index);
+            }
+          });
+        }, { threshold: 0.3 });
+
+        sectionMap.forEach(s => {
+          const el = document.getElementById(s.id);
+          if (el) observer.observe(el);
+        });
+      })();
+
+    })();
+  </script>
+</body>
+
+</html>
