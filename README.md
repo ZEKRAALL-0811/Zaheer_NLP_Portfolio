@@ -60,9 +60,12 @@ To view the portfolio locally:
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Author & Contact
 
-**Zaheer SK**  
-Natural Language Processing — CSI 4001  
-GitHub: [@ZEKRAALL-0811](https://github.com/ZEKRAALL-0811)
+- **Name:** Zaheer SK
+- **Reg. No:** 23MID0195
+- **Email:** [zaheer.sk2023@vitstudent.ac.in](mailto:zaheer.sk2023@vitstudent.ac.in)
+- **Contact:** [+91 9566025786](tel:+919566025786)
+- **Course:** Natural Language Processing (CSI 4001) — Vellore Institute of Technology (VIT)
+- **GitHub:** [@ZEKRAALL-0811](https://github.com/ZEKRAALL-0811)
 
