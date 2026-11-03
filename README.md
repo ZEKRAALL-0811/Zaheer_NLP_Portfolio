@@ -66,6 +66,6 @@ To view the portfolio locally:
 - **Reg. No:** 23MID0195
 - **Email:** [zaheer.sk2023@vitstudent.ac.in](mailto:zaheer.sk2023@vitstudent.ac.in)
 - **Contact:** [+91 9566025786](tel:+919566025786)
-- **Course:** Natural Language Processing (CSI 4001) — Vellore Institute of Technology (VIT)
+- **Course:** Natural Language Processing (CSI 4001) — Vellore Institute of Technology (VIT), Vellore campus
 - **GitHub:** [@ZEKRAALL-0811](https://github.com/ZEKRAALL-0811)
 
