@@ -95,6 +95,16 @@
     }
 
     /* Hero Photo: placed at left 338u, top -86u, 764 × 1024u */
+    
+    .hero-languages-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 4;
+    }
+
     .hero-photo-wrap {
       position: absolute;
       left: 0;
@@ -1777,6 +1787,8 @@
 
       <!-- Hero Photo: placed at left 338u, top -86u, 764 × 1024u -->
       <div class="hero-photo-wrap" id="hero-photo-wrap">
+        <!-- Interactive Multilingual Swirling Linguistic Orbit -->
+        <canvas id="hero-languages-canvas" class="hero-languages-canvas"></canvas>
         <img 
           src="zaheer_hero.webp" 
           onerror="this.src='zaheer_hero.jpg'"
@@ -2811,9 +2823,11 @@
         <a href="#works" class="back-to-wheel-btn">↑ Back to Cards Wheel</a>
       </div>
 
-      <!-- Hero Card Banner Showcase - 100% Edge-to-Edge with Matching Border -->
-      <div class="section-card" style="margin: calc(20 * var(--u)) 0 calc(32 * var(--u)); border-radius: calc(16 * var(--u)); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2); background: #000000; box-shadow: 0 calc(20 * var(--u)) calc(50 * var(--u)) rgba(0, 0, 0, 0.85); position: relative; width: 100%;">
-        <img src="assets/cards/card_10.jpg" alt="My NLP Learning Journey — Visual Card" style="width: 100%; height: auto; display: block; object-fit: cover; object-position: center; border-radius: inherit; filter: contrast(1.04);">
+      <!-- Hero Card Banner Showcase - Compact, refined, centered preview -->
+      <div style="display: flex; justify-content: center; margin: calc(18 * var(--u)) 0 calc(30 * var(--u));">
+        <div class="section-card" style="max-width: calc(640 * var(--u)); width: 100%; border-radius: calc(14 * var(--u)); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.22); background: #000000; box-shadow: 0 calc(12 * var(--u)) calc(35 * var(--u)) rgba(0, 0, 0, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.25); position: relative;">
+          <img src="assets/cards/card_10.jpg" alt="My NLP Learning Journey — Visual Card" style="width: 100%; height: auto; display: block; object-fit: cover; object-position: center; border-radius: inherit; filter: contrast(1.04);">
+        </div>
       </div>
 
       <!-- 5-Stage Milestone Pathway - Connected Timeline with Monochrome Icons -->
@@ -3258,17 +3272,17 @@
           const heightFactor = Math.min(1.0, Math.max(0.72, h / 860));
           cardW = Math.round(cardW * heightFactor);
           cardW = Math.min(440, Math.max(260, cardW));
-          const cardH = Math.round(cardW / 2.0);
+          // Standard uniform card ratio (16:9) exactly like Home, Intro, Hands-on, and Learning Journey
+          const cardH = Math.round(cardW / (800 / 450));
           metrics = { cardW, cardH };
 
           viewportEl.style.width = cardW + 'px';
           viewportEl.style.height = cardH + 'px';
 
-          document.querySelectorAll('.cylinder-card').forEach((card, idx) => {
+          // Every card has the EXACT SAME uniform dimensions
+          document.querySelectorAll('.cylinder-card').forEach(card => {
             card.style.width = cardW + 'px';
-            const asp = SECTIONS_DATA[idx]?.aspect || 2.0;
-            const thisH = Math.round(cardW / asp);
-            card.style.height = thisH + 'px';
+            card.style.height = cardH + 'px';
           });
         }
 
@@ -3372,10 +3386,23 @@
            MOUSE WHEEL & DRAG SCROLL HANDLERS (UP & DOWN)
         -------------------------------------------------- */
         carouselSection.addEventListener('wheel', (e) => {
+          // Rule 1: Only scroll the cards when cursor is on top of a card
+          const isOverCard = !!e.target.closest('.cylinder-card') || !!e.target.closest('.cylinder-viewport');
+          if (!isOverCard) {
+            // Not over a card -> let page scroll normally down or up to next sections!
+            return;
+          }
+
+          // Cursor is on a card -> scroll the cards carousel
           e.preventDefault();
           isUserInteracting = true;
           clearTimeout(idleTimer);
-          targetProgress += e.deltaY * 0.0024;
+
+          // Rule 3: Invert direction as requested:
+          // Scrolling mouse upwards (deltaY < 0) -> card slide goes down
+          // Scrolling mouse downwards (deltaY > 0) -> card slide goes up
+          targetProgress -= e.deltaY * 0.0024;
+
           idleTimer = setTimeout(() => {
             isUserInteracting = false;
           }, 2400);
@@ -3688,6 +3715,183 @@
           const el = document.getElementById(s.id);
           if (el) observer.observe(el);
         });
+      })();
+
+    
+      /* ==================================================
+         HERO SECTION: MULTILINGUAL SWIRLING ATMOSPHERE
+      ================================================== */
+      (function initHeroLanguageSwirl() {
+        const canvas = document.getElementById('hero-languages-canvas');
+        const heroSection = document.getElementById('hero');
+        if (!canvas || !heroSection) return;
+
+        const ctx = canvas.getContext('2d');
+        let width = 0;
+        let height = 0;
+
+        // Rich multilingual linguistic & NLP corpus
+        const WORDS = [
+          // Tamil
+          { text: 'இயற்கை மொழி', size: 14, weight: '700' },
+          { text: 'சொல்', size: 13, weight: '600' },
+          { text: 'பொருள்', size: 13, weight: '600' },
+          { text: 'இலக்கணம்', size: 12, weight: '600' },
+          // Hindi & Sanskrit
+          { text: 'प्राकृतिक भाषा', size: 14, weight: '700' },
+          { text: 'अर्थ', size: 13, weight: '600' },
+          { text: 'वाक्यम्', size: 13, weight: '600' },
+          { text: 'ज्ञानम्', size: 14, weight: '700' },
+          // Arabic
+          { text: 'لغة طبيعية', size: 15, weight: '700' },
+          { text: 'معنى', size: 14, weight: '600' },
+          { text: 'بيان', size: 13, weight: '600' },
+          // Japanese & Chinese
+          { text: '自然言語処理', size: 14, weight: '700' },
+          { text: '文脈', size: 13, weight: '600' },
+          { text: '自然语言', size: 14, weight: '700' },
+          { text: '语义', size: 13, weight: '600' },
+          // European & Classical Languages
+          { text: 'Natural Language', size: 14, weight: '700' },
+          { text: 'Tokenization', size: 13, weight: '600' },
+          { text: 'Attention', size: 14, weight: '700' },
+          { text: 'Semantics', size: 13, weight: '600' },
+          { text: 'Linguistique', size: 13, weight: '600' },
+          { text: 'Sprache', size: 13, weight: '600' },
+          { text: 'Lingua Naturalis', size: 13, weight: '600' },
+          { text: 'Γλώσσα', size: 14, weight: '700' },
+          { text: 'Смысл', size: 13, weight: '600' },
+          { text: '자연어', size: 14, weight: '700' },
+          { text: 'సహజ భాష', size: 13, weight: '600' }
+        ];
+
+        let particles = [];
+
+        function resize() {
+          const rect = canvas.getBoundingClientRect();
+          width = rect.width;
+          height = rect.height;
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.round(width * dpr);
+          canvas.height = Math.round(height * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function createParticles() {
+          particles = [];
+          const count = WORDS.length;
+          for (let i = 0; i < count; i++) {
+            const wordObj = WORDS[i];
+            const ring = i % 3; // 3 concentric orbital streams
+            let rx, ry, tilt, speed;
+            if (ring === 0) {
+              rx = 290; ry = 145; tilt = 0.36; speed = 0.00068;
+            } else if (ring === 1) {
+              rx = 420; ry = 210; tilt = -0.30; speed = -0.00052;
+            } else {
+              rx = 560; ry = 280; tilt = 0.22; speed = 0.00038;
+            }
+
+            particles.push({
+              text: wordObj.text,
+              size: wordObj.size,
+              weight: wordObj.weight,
+              angle: (i / count) * Math.PI * 2,
+              rx: rx,
+              ry: ry,
+              tilt: tilt,
+              speed: speed * (0.85 + Math.random() * 0.3),
+              yOffset: (Math.random() - 0.5) * 50,
+              baseAlpha: 0.65 + Math.random() * 0.3
+            });
+          }
+        }
+
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetMouseX = 0;
+        let targetMouseY = 0;
+
+        heroSection.addEventListener('mousemove', (e) => {
+          const rect = heroSection.getBoundingClientRect();
+          targetMouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+          targetMouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+        });
+
+        heroSection.addEventListener('mouseleave', () => {
+          targetMouseX = 0;
+          targetMouseY = 0;
+        });
+
+        let lastTime = performance.now();
+
+        function renderSwirl(now) {
+          const dt = Math.min((now - lastTime), 60);
+          lastTime = now;
+
+          mouseX += (targetMouseX - mouseX) * 0.05;
+          mouseY += (targetMouseY - mouseY) * 0.05;
+
+          ctx.clearRect(0, 0, width, height);
+
+          // Center coordinate around Zaheer portrait
+          const cx = width * 0.5 + mouseX * 24;
+          const cy = height * 0.48 + mouseY * 18;
+
+          particles.forEach(p => {
+            p.angle += p.speed * dt;
+            p.z = Math.sin(p.angle); // -1 (behind) to +1 (in front)
+          });
+
+          // Sort by depth so background text is drawn first
+          const sorted = [...particles].sort((a, b) => a.z - b.z);
+
+          sorted.forEach(p => {
+            const cosA = Math.cos(p.angle);
+            const sinA = Math.sin(p.angle);
+
+            const curTilt = p.tilt + mouseY * 0.14;
+            const x = cx + cosA * (p.rx + mouseX * 25);
+            const y = cy + sinA * p.ry * Math.cos(curTilt) + p.yOffset;
+
+            // Depth scale and alpha
+            const scale = 0.82 + (p.z + 1) * 0.22;
+            const alpha = Math.max(0.15, Math.min(0.95, p.baseAlpha * (0.42 + (p.z + 1) * 0.4)));
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+
+            const fontSize = p.size;
+            ctx.font = `${p.weight} ${fontSize}px "Inter Tight", "Noto Sans", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Ethereal white/silver text with subtle glow when in front
+            if (p.z > 0) {
+              ctx.shadowColor = 'rgba(255, 255, 255, ' + (p.z * 0.5).toFixed(2) + ')';
+              ctx.shadowBlur = 8 * p.z;
+            }
+
+            ctx.fillStyle = `rgba(240, 240, 240, ${alpha.toFixed(2)})`;
+            ctx.fillText(p.text, 0, 0);
+
+            // Subtle glowing orbit node
+            ctx.beginPath();
+            ctx.arc(-ctx.measureText(p.text).width / 2 - 8, 0, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${(alpha * 0.7).toFixed(2)})`;
+            ctx.fill();
+
+            ctx.restore();
+          });
+
+          requestAnimationFrame(renderSwirl);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        createParticles();
+        requestAnimationFrame(renderSwirl);
       })();
 
     })();
